@@ -1,5 +1,14 @@
-require "lazy_resource/version"
+require 'active_model'
+require 'active_support'
+require 'json'
+require 'typhoeus'
+
+require 'lazy_resource/version'
+require 'lazy_resource/errors'
 
 module LazyResource
-  # Your code goes here...
+  extend ActiveSupport::Autoload
+  
+  autoload :Attributes
+  autoload :Resource
 end
