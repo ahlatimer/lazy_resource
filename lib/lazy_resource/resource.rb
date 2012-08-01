@@ -11,7 +11,6 @@ module LazyResource
       end
     end
 
-
     included do
       extend ActiveModel::Naming
       include ActiveModel::Conversion

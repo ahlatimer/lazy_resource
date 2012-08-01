@@ -19,7 +19,7 @@ module LazyResource
 
       self.tap do |resource|
         hash.each do |name, value|
-          attribute = self.class.attributes[name]
+          attribute = self.class.attributes[name.to_sym]
           next if attribute.nil?
 
           type = attribute[:type]
