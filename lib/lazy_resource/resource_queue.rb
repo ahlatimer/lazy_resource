@@ -15,12 +15,15 @@ module LazyResource
     end
 
     def run
+      send_to_request_queue!
+      request_queue.run
+    end
+
+    def send_to_request_queue!
       while(relation = @queue.pop)
         request = Request.new(url_for(relation), relation)
         request_queue.queue(request)
       end
-
-      request_queue.run
     end
 
     def url_for(relation)

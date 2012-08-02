@@ -52,7 +52,12 @@ describe LazyResource::Resource do
   end
 
   describe '.find' do
-    pending 'is a special case from the other finders (where, etc.) in that it returns only one object. I still haven\'t decided how I want to handle this.'
+    it 'generates a new resource and associated request and adds it to the request queue' do
+      LazyResource::Request.should_receive(:new)
+      User.request_queue.should_receive(:queue)
+      user = User.find(1)
+      user.fetched?.should == false
+    end
   end
 
   describe '.where' do

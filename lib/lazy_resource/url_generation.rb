@@ -65,13 +65,6 @@ module LazyResource
         "#{prefix(prefix_options)}#{from || collection_name}#{query_string(query_options)}"
       end
 
-      def check_prefix_options(prefix_options)
-        p_options = HashWithIndifferentAccess.new(prefix_options)
-        prefix_parameters.each do |p|
-          raise(MissingPrefixParam, "#{p} prefix_option is missing") if p_options[p].blank?
-        end
-      end
-      
       # contains a set of the current prefix parameters.
       def prefix_parameters
         @prefix_parameters ||= prefix_source.scan(/:\w+/).map { |key| key[1..-1].to_sym }.to_set

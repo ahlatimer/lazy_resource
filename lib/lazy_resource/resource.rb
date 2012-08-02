@@ -27,6 +27,14 @@ module LazyResource
         @site = site
       end
 
+      def request_queue
+        Thread.current[:request_queue] ||= Typhoeus::Hydra.new
+      end
+
+      def resource_queue
+        Thread.current[:resource_queue] ||= LazyResource::ResourceQueue.new
+      end
+
       attr_writer :element_name
       def element_name
         @element_name ||= model_name.element
@@ -36,6 +44,14 @@ module LazyResource
 
       def collection_name
         @collection_name ||= ActiveSupport::Inflector.pluralize(element_name)
+      end
+
+      def find(id, params={}, options={})
+        resource = self.new
+        resource.fetched = false
+        request = Request.new(self.element_path(id, params), resource, options)
+        request_queue.queue(request)
+        resource
       end
 
       def where(where_values)
@@ -59,18 +75,12 @@ module LazyResource
       end
     end
 
-    attr_accessor :fetched
-
     def initialize(attributes={})
       self.tap do |resource|
         resource.load(attributes)
       end
     end
 
-    def fetched?
-      @fetched
-    end
-    
     # Tests for equality. Returns true iff +other+ is the same object or
     # other is an instance of the same class and has the same attributes.
     def ==(other)
@@ -90,7 +100,7 @@ module LazyResource
     included do
       extend ActiveModel::Naming
       include ActiveModel::Conversion
-      include Attributes, Mapping, Types
+      include Attributes, Mapping, Types, UrlGeneration
     end
   end
 end

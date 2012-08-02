@@ -8,6 +8,11 @@ module LazyResource
         
         class_eval <<-RUBY, __FILE__, __LINE__ + 1
           def #{name}
+            if !fetched?
+              self.class.resource_queue.send_to_request_queue!
+              self.class.request_queue.run
+            end
+
             @#{name}
           end
           

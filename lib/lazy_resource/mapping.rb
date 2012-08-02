@@ -2,6 +2,12 @@ module LazyResource
   module Mapping
     extend ActiveSupport::Concern
 
+    attr_accessor :fetched
+
+    def fetched?
+      @fetched
+    end
+
     module ClassMethods
       def load(objects)
         if objects.is_a?(Array)
@@ -15,9 +21,10 @@ module LazyResource
     end
 
     def load(hash)
-      return hash if hash.kind_of?(LazyResource::Mapping)
+      hash.fetched = true and return hash if hash.kind_of?(LazyResource::Mapping)
 
       self.tap do |resource|
+        resource.fetched = true
         hash.each do |name, value|
           attribute = self.class.attributes[name.to_sym]
           next if attribute.nil?
