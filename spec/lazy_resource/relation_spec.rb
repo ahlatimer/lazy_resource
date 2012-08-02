@@ -1,10 +1,22 @@
 require 'spec_helper'
 
 describe LazyResource::Relation do
+  before :each do
+    LazyResource::HttpMock.respond_to do |responder|
+      responder.get('http://example.com', '')
+      responder.get('http://example.com/users', '')
+    end
+  end
+
   describe '#new' do
     it 'adds itself to the resource queue' do
       users = LazyResource::Relation.new(User)
       users.resource_queue.instance_variable_get("@queue").include?(users).should == true
+    end
+
+    it 'does not add itself to the resource queue if fetched' do
+      users = LazyResource::Relation.new(User, :fetched => true)
+      users.resource_queue.instance_variable_get("@queue").include?(users).should_not == true
     end
   end
 
@@ -20,6 +32,13 @@ describe LazyResource::Relation do
   describe '.resource_queue' do
     it 'creates a new resource queue if one does not already exist' do
       LazyResource::Relation.resource_queue.should_not be_nil
+    end
+  end
+
+  describe '#collection_name' do
+    it 'should return the collection name from the klass' do
+      relation = LazyResource::Relation.new(User)
+      relation.collection_name.should == User.collection_name
     end
   end
 

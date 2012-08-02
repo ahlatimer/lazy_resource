@@ -11,5 +11,9 @@ module LazyResource
   autoload :HttpMock
 end
 
+LazyResource.configure do |config|
+  config.site = "http://example.com"
+end
+
 RSpec.configure do |config|
 end

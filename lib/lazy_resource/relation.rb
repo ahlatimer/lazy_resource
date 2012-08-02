@@ -1,3 +1,5 @@
+require 'active_support/core_ext/hash/slice'
+
 module LazyResource
   class Relation
     class << self
@@ -6,13 +8,41 @@ module LazyResource
       end
     end
 
-    def initialize(klass, values = {})
+    attr_accessor :fetched, :klass, :values, :from, :site
+
+    def initialize(klass, options = {})
       @klass = klass
-      @values = values
-      resource_queue.queue(self)
+      @values = options.slice(:where_values, :order_value, :limit_value, :offset_value, :page_value)
+      @fetched = options[:fetched] || false
+      unless fetched?
+        resource_queue.queue(self)
+      end
+    end
+
+    def from
+      @from || self.klass.collection_name
+    end
+
+    def collection_name
+      from
+    end
+
+    def site
+      @site || self.klass.site
+    end
+
+    def to_params
+      params = {}
+      params.merge!(where_values) unless where_values.nil?
+      params.merge!(:order => order_value) unless order_value.nil?
+      params.merge!(:limit => limit_value) unless limit_value.nil?
+      params.merge!(:offset => offset_value) unless offset_value.nil?
+      params.merge!(:page => page_value) unless page_value.nil?
+      params
     end
 
     def load(objects)
+      @fetched = true
       @result = @klass.load(objects)
     end
 
@@ -70,13 +100,13 @@ module LazyResource
       @values[:page_value]
     end
 
-    def to_a
-      notify_resource_queue
-      @result || []
+    def fetched?
+      @fetched
     end
 
-    def notify_resource_queue
-      
+    def to_a
+      resource_queue.run if !fetched?
+      @result || []
     end
 
     def method_missing(name, *args, &block)
