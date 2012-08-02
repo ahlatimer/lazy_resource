@@ -3,21 +3,21 @@ module LazyResource
     extend ActiveSupport::Concern
 
     def element_path(options = nil)
-      self.class.element_path(to_param, options || prefix_options)
+      self.class.element_path(to_param, options)
     end
 
     def new_element_path
-      self.class.new_element_path(prefix_options)
+      self.class.new_element_path
     end
 
     def collection_path(options = nil)
-      self.class.collection_path(options || prefix_options)
+      self.class.collection_path(options)
     end
 
     def split_options(options = {})
       self.class.split_options(options)
     end
-    
+
     module ClassMethods
       # Gets the \prefix for a resource's nested URL (e.g., <tt>prefix/collectionname/1</tt>)
       def prefix(options={})
@@ -49,8 +49,8 @@ module LazyResource
       # ==== Options
       # * +prefix_options+ - A hash to add a prefix to the request for nested URLs (e.g., <tt>:account_id => 19</tt>
       # would yield a URL like <tt>/accounts/19/purchases/new.json</tt>).
-      def new_element_path(prefix_options = {})
-        "#{prefix(prefix_options)}#{collection_name}/new"
+      def new_element_path(prefix_options = {}, from = nil)
+        "#{prefix(prefix_options)}#{from || collection_name}/new"
       end
 
       # Gets the collection path for the REST resources. If the +query_options+ parameter is omitted, Rails
