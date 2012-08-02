@@ -10,9 +10,10 @@ module LazyResource
   extend ActiveSupport::Autoload
   
   autoload :Attributes
-  autoload :Collection
   autoload :Mapping
+  autoload :Relation
   autoload :Request
   autoload :Resource
+  autoload :ResourceQueue
   autoload :Types
 end

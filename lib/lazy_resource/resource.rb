@@ -3,6 +3,25 @@ module LazyResource
     extend ActiveSupport::Concern
 
     module ClassMethods
+      def where(where_values)
+        Relation.new(self, :where_values => where_values)
+      end
+
+      def order(order_value)
+        Relation.new(self, :order_value => order_value)
+      end
+
+      def limit(limit_value)
+        Relation.new(self, :limit_value => limit_value)
+      end
+
+      def offset(offset_value)
+        Relation.new(self, :offset_value => offset_value)
+      end
+      
+      def page(page_value)
+        Relation.new(self, :page_value => page_value)
+      end
     end
 
     def initialize(attributes={})

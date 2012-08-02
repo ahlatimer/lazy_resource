@@ -50,4 +50,43 @@ describe LazyResource::Resource do
       user1.eql?(user2).should == false
     end
   end
+
+  describe '.find' do
+    pending 'is a special case from the other finders (where, etc.) in that it returns only one object. I still haven\'t decided how I want to handle this.'
+  end
+
+  describe '.where' do
+    it 'creates a new relation with the passed where values' do
+      users = User.where(:name => 'Andrew')
+      users.where_values.should == { :name => 'Andrew' }
+    end
+  end
+
+  describe '.order' do
+    it 'creates a new relation with the passed order value' do
+      users = User.order('created_at')
+      users.order_value.should == 'created_at'
+    end
+  end
+  
+  describe '.limit' do
+    it 'creates a new relation with the passed limit value' do
+      users = User.limit(10)
+      users.limit_value.should == 10
+    end
+  end
+
+  describe '.offset' do
+    it 'creates a new relation with the passed offset' do
+      users = User.offset(10)
+      users.offset_value.should == 10
+    end
+  end
+
+  describe '.page' do
+    it 'creates a new relation with the passed page' do
+      users = User.page(3)
+      users.page_value.should == 3
+    end
+  end
 end

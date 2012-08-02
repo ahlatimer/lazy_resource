@@ -82,27 +82,29 @@ describe LazyResource::Request do
     end
 
     describe 'resource collections' do
-      request = LazyResource::Request.new('http://example.com', LazyResource::Collection.new(SampleResource))
-      response_options = {
-        :code => 200,
-        :body => [{
-          :id => 1,
-          :name => 'Andrew',
-          :created_at => '2012-08-01 00:00:00 -0500'
-        }, {
-          :id => 2,
-          :name => 'James',
-          :created_at => '2012-07-01 00:00:00 -0500'
-        }].to_json,
-        :time => 0.3
-      }
-      response = Typhoeus::Response.new(response_options)
-      request.response = response
-      request.parse
-      users = request.resource.to_a
-      users.map(&:id).should == [1,2]
-      users.map(&:name).should == ['Andrew', 'James']
-      users.map(&:created_at).should == [DateTime.parse('2012-08-01 00:00:00 -0500'), DateTime.parse('2012-07-01 00:00:00 -0500')]
+      it 'parses JSON and loads it onto the resource' do
+        request = LazyResource::Request.new('http://example.com', LazyResource::Relation.new(SampleResource))
+        response_options = {
+          :code => 200,
+          :body => [{
+            :id => 1,
+            :name => 'Andrew',
+            :created_at => '2012-08-01 00:00:00 -0500'
+          }, {
+            :id => 2,
+            :name => 'James',
+            :created_at => '2012-07-01 00:00:00 -0500'
+          }].to_json,
+          :time => 0.3
+        }
+        response = Typhoeus::Response.new(response_options)
+        request.response = response
+        request.parse
+        users = request.resource.to_a
+        users.map(&:id).should == [1,2]
+        users.map(&:name).should == ['Andrew', 'James']
+        users.map(&:created_at).should == [DateTime.parse('2012-08-01 00:00:00 -0500'), DateTime.parse('2012-07-01 00:00:00 -0500')]
+      end
     end
   end
 
