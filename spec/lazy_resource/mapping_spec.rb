@@ -91,6 +91,51 @@ describe LazyResource::Mapping do
     end
   end
 
+  describe '.root_node_name' do
+    after :each do
+      LazyResource::Mapping.root_node_name = nil
+      Foo.root_node_name = nil
+    end
+
+    it 'defaults to nil' do
+      Foo.root_node_name.should == nil
+    end
+
+    it 'specifies the root node name' do
+      Foo.root_node_name = :data
+      Foo.root_node_name.should == :data
+    end
+
+    it 'maps the object at that value' do
+      Foo.root_node_name = :data
+      user = Foo.load({ :data => { :id => 123 } })
+      user.id.should == 123
+    end
+
+    it 'maps objects without root node names, even if a root node name is defined' do
+      Foo.root_node_name = :data
+      user = Foo.load({ :id => 123 })
+      user.id.should == 123
+    end
+
+    it 'maps collections at the root node name' do
+      Foo.root_node_name = :data
+      users = Foo.load({ :data => [{ :id => 123 }, { :id => 124 }]})
+      users.map(&:id).should == [123,124]
+    end
+
+    it 'maps collections without root node names, even if a root node name is defined' do
+      Foo.root_node_name = :data
+      users = Foo.load([{ :id => 123 }, { :id => 124 }])
+      users.map(&:id).should == [123,124]
+    end
+    
+    it 'looks in the module for the root node name' do
+      LazyResource::Mapping.root_node_name = :data
+      Foo.root_node_name.should == :data
+    end
+  end
+
   describe '#load' do
     before :each do 
       @now = DateTime.now

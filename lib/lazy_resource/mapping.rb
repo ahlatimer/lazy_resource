@@ -8,14 +8,34 @@ module LazyResource
       @fetched
     end
 
+    def self.root_node_name=(node)
+      @root_node_name = node
+    end
+
+    def self.root_node_name
+      @root_node_name
+    end
+
     module ClassMethods
+      def root_node_name=(node)
+        @root_node_name = node
+      end
+
+      def root_node_name
+        @root_node_name || LazyResource::Mapping.root_node_name
+      end
+
       def load(objects)
         if objects.is_a?(Array)
           objects.map do |object|
             self.new.load(object)
           end
         else
-          self.new.load(objects)
+          if self.root_node_name && objects.key?(self.root_node_name)
+            self.load(objects[self.root_node_name])
+          else
+            self.new.load(objects)
+          end
         end
       end
     end
@@ -25,6 +45,8 @@ module LazyResource
 
       self.tap do |resource|
         resource.fetched = true
+
+        hash = hash[self.class.root_node_name] if self.class.root_node_name && hash.key?(self.class.root_node_name)
         hash.each do |name, value|
           attribute = self.class.attributes[name.to_sym]
           next if attribute.nil?
