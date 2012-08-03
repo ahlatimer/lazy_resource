@@ -108,7 +108,7 @@ describe LazyResource::Mapping do
 
     it 'maps the object at that value' do
       Foo.root_node_name = :data
-      user = Foo.load({ :data => { :id => 123 } })
+      user = Foo.load({ 'data' => { :id => 123 } })
       user.id.should == 123
     end
 
@@ -120,7 +120,7 @@ describe LazyResource::Mapping do
 
     it 'maps collections at the root node name' do
       Foo.root_node_name = :data
-      users = Foo.load({ :data => [{ :id => 123 }, { :id => 124 }]})
+      users = Foo.load({ 'data' => [{ :id => 123 }, { :id => 124 }]})
       users.map(&:id).should == [123,124]
     end
 
@@ -133,6 +133,15 @@ describe LazyResource::Mapping do
     it 'looks in the module for the root node name' do
       LazyResource::Mapping.root_node_name = :data
       Foo.root_node_name.should == :data
+    end
+
+    it 'handles root node names that are strings or symbols' do
+      Foo.root_node_name = :data
+      user = Foo.load('data' => { :id => 123 })
+      user.id.should == 123
+      Foo.root_node_name = 'data'
+      user = Foo.load('data' => { :id => 123 })
+      user.id.should == 123
     end
   end
 

@@ -31,8 +31,8 @@ module LazyResource
             self.new.load(object)
           end
         else
-          if self.root_node_name && objects.key?(self.root_node_name)
-            self.load(objects[self.root_node_name])
+          if self.root_node_name && objects.key?(self.root_node_name.to_s)
+            self.load(objects[self.root_node_name.to_s])
           else
             self.new.load(objects)
           end
@@ -45,8 +45,8 @@ module LazyResource
 
       self.tap do |resource|
         resource.fetched = true
-
-        hash = hash[self.class.root_node_name] if self.class.root_node_name && hash.key?(self.class.root_node_name)
+        
+        hash = hash[resource.class.root_node_name.to_s] if resource.class.root_node_name && hash.key?(resource.class.root_node_name.to_s)
         hash.each do |name, value|
           attribute = self.class.attributes[name.to_sym]
           next if attribute.nil?
