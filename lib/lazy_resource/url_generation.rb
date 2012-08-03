@@ -65,11 +65,6 @@ module LazyResource
         "#{prefix(prefix_options)}#{from || collection_name}#{query_string(query_options)}"
       end
 
-      # contains a set of the current prefix parameters.
-      def prefix_parameters
-        @prefix_parameters ||= prefix_source.scan(/:\w+/).map { |key| key[1..-1].to_sym }.to_set
-      end
-
       # Builds the query string for the request.
       def query_string(options)
         "?#{options.to_query}" unless options.nil? || options.empty?

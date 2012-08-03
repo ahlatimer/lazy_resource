@@ -129,4 +129,19 @@ describe LazyResource::Relation do
       relation.page_value.should == 10
     end
   end
+
+  describe '#to_params' do
+    it 'wraps up the where, order, limit, offset, and page values into a hash' do
+      params = { :where_values => { :name => 'Andrew' }, :order_value => 'created_at', :limit_value => 10, :offset_value => 10, :page_value => 10 }
+      relation = LazyResource::Relation.new(User, params)
+      relation.to_params.should == { :name => 'Andrew', :order => 'created_at', :limit => 10, :offset => 10, :page => 10 }
+    end
+  end
+
+  describe '#respond_to?' do
+    it 'returns true if array responds to the method' do
+      relation = LazyResource::Relation.new(User)
+      relation.respond_to?(:[]).should == true
+    end
+  end
 end

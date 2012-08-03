@@ -9,10 +9,6 @@ class Item
     def collection_name
       'items'
     end
-
-    def element_name
-      'item'
-    end
   end
 
   def initialize
@@ -123,10 +119,6 @@ describe LazyResource::UrlGeneration do
     it 'uses the "from" parameter over the collection name if passed' do
       Item.collection_path({}, {}, 'comments').should == '/comments'
     end
-  end
-
-  describe '.prefix_parameters' do
-    pending 'not currently used'
   end
 
   describe '.query_string' do

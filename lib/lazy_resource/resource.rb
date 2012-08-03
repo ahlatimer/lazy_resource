@@ -31,10 +31,6 @@ module LazyResource
         Thread.current[:request_queue] ||= Typhoeus::Hydra.new
       end
 
-      def resource_queue
-        Thread.current[:resource_queue] ||= LazyResource::ResourceQueue.new
-      end
-
       attr_writer :element_name
       def element_name
         @element_name ||= model_name.element

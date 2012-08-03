@@ -19,4 +19,5 @@ LazyResource.configure do |config|
 end
 
 RSpec.configure do |config|
+  config.mock_with nil
 end

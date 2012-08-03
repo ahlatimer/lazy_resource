@@ -94,4 +94,54 @@ describe LazyResource::Resource do
       users.page_value.should == 3
     end
   end
+
+  describe '.site' do
+    before :each do
+      @site = User.site
+    end
+
+    after :each do
+      User.site = @site
+    end
+
+    it 'returns the site if it is defined' do
+      User.site = 'http://github.com'
+      User.site.should == 'http://github.com'
+    end
+
+    it 'returns LazyResource::Resource.site if site is not defined' do
+      User.send(:remove_instance_variable, "@site")
+      User.site.should == LazyResource::Resource.site
+    end
+  end
+
+  describe '.site=' do
+    before :each do
+      @site = User.site
+    end
+
+    after :each do
+      User.site = @site
+    end
+
+    it 'sets the site' do
+      User.site = 'http://github.com'
+      User.site.should == 'http://github.com'
+    end
+  end
+
+  describe '.resource_queue' do
+    before :each do
+      Thread.current[:request_queue] = nil
+    end
+
+    after :each do
+      Thread.current[:resource_queue] = nil
+    end
+
+    it 'creates a new Hydra queue on the current thread' do
+      Typhoeus::Hydra.should_receive(:new)
+      User.request_queue.should == Thread.current[:request_queue]
+    end
+  end
 end

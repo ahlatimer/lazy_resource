@@ -27,10 +27,6 @@ module LazyResource
       from
     end
 
-    def site
-      @site || self.klass.site
-    end
-
     def to_params
       params = {}
       params.merge!(where_values) unless where_values.nil?
@@ -106,11 +102,19 @@ module LazyResource
 
     def to_a
       resource_queue.run if !fetched?
-      @result || []
+      result
+    end
+
+    def result
+      @result ||= []
+    end
+
+    def respond_to?(method, include_private = false)
+      super || result.respond_to?(method, include_private)
     end
 
     def method_missing(name, *args, &block)
-      if Array.instance_methods.include?(name)
+      if result.respond_to?(name)
         self.to_a.send(name, *args, &block)
       else
         super
