@@ -51,6 +51,30 @@ describe LazyResource::Resource do
     end
   end
 
+  describe '#new_record?' do
+    it 'returns true if the record is new' do
+      user = User.new(:name => 'Andrew')
+      user.new_record?.should == true
+    end
+
+    it 'returns false if the record is not new' do
+      user = User.load(:name => 'Andrew')
+      user.new_record?.should == false
+    end
+  end
+
+  describe '#persisted?' do
+    it 'returns true if the record is persisted (exists on the server)' do
+      user = User.load(:name => 'Andrew')
+      user.persisted?.should == true
+    end
+
+    it 'returns false if the record is not persisted' do
+      user = User.new(:name => 'Andrew')
+      user.persisted?.should == false
+    end
+  end
+
   describe '.find' do
     it 'generates a new resource and associated request and adds it to the request queue' do
       LazyResource::Request.should_receive(:new)

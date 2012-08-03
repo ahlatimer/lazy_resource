@@ -45,6 +45,7 @@ module LazyResource
       def find(id, params={}, options={})
         resource = self.new
         resource.fetched = false
+        resource.persisted = true
         request = Request.new(self.element_path(id, params), resource, options)
         request_queue.queue(request)
         resource
@@ -74,6 +75,7 @@ module LazyResource
     def initialize(attributes={})
       self.tap do |resource|
         resource.load(attributes)
+        resource.persisted = false
       end
     end
 
@@ -92,6 +94,16 @@ module LazyResource
     def eql?(other)
       self == other
     end
+
+    def persisted?
+      @persisted
+    end
+
+    def new_record?
+      !persisted?
+    end
+
+    alias :new? :new_record?
 
     included do
       extend ActiveModel::Naming

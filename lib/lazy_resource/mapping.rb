@@ -2,7 +2,7 @@ module LazyResource
   module Mapping
     extend ActiveSupport::Concern
 
-    attr_accessor :fetched
+    attr_accessor :fetched, :persisted
 
     def fetched?
       @fetched
@@ -45,6 +45,7 @@ module LazyResource
 
       self.tap do |resource|
         resource.fetched = true
+        resource.persisted = true
         
         hash = hash[resource.class.root_node_name.to_s] if resource.class.root_node_name && hash.key?(resource.class.root_node_name.to_s)
         hash.each do |name, value|
