@@ -9,5 +9,6 @@ gem 'debugger'
 gem 'rake'
 
 gem 'rspec'
+gem 'simplecov', :require => false
 gem 'guard-rspec'
 gem 'growl'
