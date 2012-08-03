@@ -10,6 +10,10 @@ module LazyResource
       @queue.push(relation)
     end
 
+    def flush!
+      @queue = []
+    end
+
     def request_queue
       Thread.current[:request_queue] ||= Typhoeus::Hydra.new
     end
@@ -28,7 +32,7 @@ module LazyResource
 
     def url_for(relation)
       url = ''
-      url << relation.site
+      url << relation.klass.site
       url << self.class.collection_path(relation.to_params, nil, relation.from)
       url
     end
