@@ -8,19 +8,18 @@ module LazyResource
         
         class_eval <<-RUBY, __FILE__, __LINE__ + 1
           def #{name}
-            if !fetched?
-              self.class.resource_queue.send_to_request_queue!
-              self.class.request_queue.run
-            end
+            self.class.fetch_all if !fetched?
 
             @#{name}
           end
           
           def #{name}?
-            !!@#{name}
+            !!self.#{name}
           end
 
           def #{name}=(value)
+            self.class.fetch_all if !fetched?
+
             #{name}_will_change! unless @#{name} == value
             @#{name} = value
           end
@@ -28,6 +27,11 @@ module LazyResource
 
         @attribute_methods_generated = false
         define_attribute_methods [name]
+      end
+
+      def fetch_all
+        self.class.resource_queue.send_to_request_queue!
+        self.class.request_queue.run
       end
 
       def attributes
