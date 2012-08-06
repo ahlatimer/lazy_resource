@@ -61,6 +61,14 @@ module LazyResource
       def page(page_value)
         Relation.new(self, :page_value => page_value)
       end
+
+      def create(attributes={})
+        new(attributes).tap do |resource|
+          request = Request.new(resource.collection_url, resource, :method => :post, :params => { :user => attributes })
+          request_queue.queue(request)
+          fetch_all
+        end
+      end
     end
 
     def initialize(attributes={})

@@ -241,6 +241,30 @@ describe LazyResource::Resource do
     end
   end
 
+  describe '.create' do
+    before :each do
+      LazyResource::HttpMock.respond_to do |responder|
+        responder.post 'http://example.com/users', '{ "name": "Andrew", "id": 1 }'
+      end
+    end
+
+    it 'instantiates a new record with the passed values' do
+      user = User.create(:name => 'Andrew')
+      user.name.should == 'Andrew'
+    end
+
+    it 'issues a POST request with the passed parameters' do
+      user = User.new(:name => 'Andrew')
+      params = ['http://example.com/users', user, {
+        :method => :post,
+        :params => { :user => { :name => 'Andrew' } }
+      }]
+      request = LazyResource::Request.new(*params)
+      LazyResource::Request.should_receive(:new).with(*params).and_return(request)
+      User.create(:name => 'Andrew')
+    end
+  end
+
   describe '.site' do
     before :each do
       @site = User.site
