@@ -17,6 +17,8 @@ module LazyResource
       unless fetched?
         resource_queue.queue(self)
       end
+
+      self
     end
 
     def from

@@ -1,7 +1,9 @@
 module LazyResource
   module Resource
     extend ActiveSupport::Concern
-    
+    include ActiveModel::Conversion
+    include Attributes, Mapping, Types, UrlGeneration
+
     def self.site=(site)
       @site = site
     end
@@ -29,17 +31,6 @@ module LazyResource
 
       def request_queue
         Thread.current[:request_queue] ||= Typhoeus::Hydra.new
-      end
-
-      attr_writer :element_name
-      def element_name
-        @element_name ||= model_name.element
-      end
-
-      attr_writer :collection_name
-
-      def collection_name
-        @collection_name ||= ActiveSupport::Inflector.pluralize(element_name)
       end
 
       def find(id, params={}, options={})
@@ -87,7 +78,14 @@ module LazyResource
 
       self.class.attributes.inject(true) do |memo, attribute|
         attribute_name = attribute.first
-        memo && self.send(:"#{attribute_name}") == other.send(:"#{attribute_name}")
+        attribute_type = attribute.last[:type]
+
+        # Skip associations
+        if attribute_type.include?(LazyResource::Resource) || (attribute_type.is_a?(::Array) && attribute_type.first.include?(LazyResource::Resource))
+          memo
+        else
+          memo && self.send(:"#{attribute_name}") == other.send(:"#{attribute_name}")
+        end
       end
     end
     
@@ -105,10 +103,5 @@ module LazyResource
 
     alias :new? :new_record?
 
-    included do
-      extend ActiveModel::Naming
-      include ActiveModel::Conversion
-      include Attributes, Mapping, Types, UrlGeneration
-    end
   end
 end
