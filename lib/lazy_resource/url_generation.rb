@@ -3,7 +3,7 @@ module LazyResource
     extend ActiveSupport::Concern
 
     def element_path(options = nil)
-      self.class.element_path(to_param, options)
+      self.class.element_path(self.primary_key, options)
     end
 
     def new_element_path

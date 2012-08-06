@@ -103,5 +103,34 @@ module LazyResource
 
     alias :new? :new_record?
 
+    def save
+      return true if !changed?
+      new_record? ? create : update
+      self.persisted = true
+    end
+
+    def create
+      url = self.class.site.to_s.gsub(/\/$/, '')
+      url << self.collection_path
+      request = Request.new(url, self, { :method => :post, :params => attribute_params })
+      self.class.request_queue.queue(request)
+      self.class.fetch_all
+    end
+
+    def update
+      url = self.class.site.to_s.gsub(/\/$/, '')
+      url << self.class.element_path(self.primary_key)
+      request = Request.new(url, self, { :method => :put, :params => attribute_params })
+      self.class.request_queue.queue(request)
+      self.class.fetch_all
+    end
+
+    def attribute_params
+      { self.class.element_name.to_sym => changed_attributes.inject({}) do |hash, changed_attribute|
+        hash.tap do |hash|
+          hash[changed_attribute.first] = self.send(changed_attribute.first)
+        end
+      end }
+    end
   end
 end

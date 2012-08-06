@@ -75,6 +75,81 @@ describe LazyResource::Resource do
     end
   end
 
+  describe '#save' do
+    describe 'new record' do
+      before :each do
+        LazyResource::HttpMock.respond_to do |responder|
+          responder.post('http://example.com/users', '{ "name": "Andrew" }')
+        end
+      end
+      
+      it 'calls #create' do
+        user = User.new(:name => 'Andrew')
+        user.should_receive(:create)
+        user.save
+      end
+    end
+
+    describe 'persisted record' do
+      before :each do
+        LazyResource::HttpMock.respond_to do |responder|
+          responder.put('http://example.com/users/1', '{ "name": "Andrew" }')
+        end
+      end
+
+      it 'calls #update' do
+        user = User.load(:name => 'Andrew')
+        user.should_receive(:update)
+        user.save
+      end
+    end
+  end
+
+  describe '#create' do
+    before :each do
+      LazyResource::HttpMock.respond_to do |responder|
+        responder.post('http://example.com/users', '{ "name": "Andrew" }')
+      end
+    end
+
+    it 'issues a POST request with the set attributes' do
+      user = User.new(:name => 'Andrew')
+      params = ['http://example.com/users', user, {
+        :method => :post,
+        :params => { :user => { 'name' => 'Andrew' } }
+      }]
+      request = LazyResource::Request.new(*params)
+      LazyResource::Request.should_receive(:new).with(*params).and_return(request)
+      user.create
+    end
+  end
+
+  describe '#update' do
+    before :each do
+      LazyResource::HttpMock.respond_to do |responder|
+        responder.put('http://example.com/users/1', '{ "name": "Andrew" }')
+      end
+    end
+
+    it 'issues a PUT request with the set attributes' do
+      user = User.load(:name => 'Andrew', :id => 1)
+      params = ['http://example.com/users/1', user, {
+        :method => :put,
+        :params => { :user => { 'name' => 'Andrew', 'id' => 1 } }
+      }]
+      request = LazyResource::Request.new(*params)
+      LazyResource::Request.should_receive(:new).with(*params).and_return(request)
+      user.update
+    end
+  end
+
+  describe '#attribute_params' do
+    it 'returns a hash of all of the changed attributes' do
+      user = User.new(:name => 'Andrew')
+      user.attribute_params.should == { :user => { 'name' => 'Andrew' } }
+    end
+  end
+
   describe '.find' do
     it 'generates a new resource and associated request and adds it to the request queue' do
       LazyResource::Request.should_receive(:new)

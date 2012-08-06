@@ -15,16 +15,17 @@ class Item
     @attributes = {} 
   end
 
-  def to_param
-   self.attributes 
+  def primary_key
+    1
   end
+
 end
 
 describe LazyResource::UrlGeneration do
   describe '#element_path' do
     it 'calls the class element_path' do
       item = Item.new
-      Item.should_receive(:element_path).with({}, nil)
+      Item.should_receive(:element_path).with(1, nil)
       item.element_path
     end
   end

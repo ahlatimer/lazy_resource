@@ -83,9 +83,41 @@ describe LazyResource::Attributes do
     end
   end
 
+  describe '.primary_key_name' do
+    after :all do
+      AttributeObject.primary_key_name = 'id'
+    end
+
+    it 'defaults to id' do
+      AttributeObject.primary_key_name.should == 'id'
+    end
+
+    it 'returns the primary_key_name instance variable' do
+      AttributeObject.primary_key_name.should == AttributeObject.instance_variable_get("@primary_key_name")
+    end
+  end
+
+  describe '.primary_key_name=' do
+    after :all do
+      AttributeObject.primary_key_name = 'id'
+    end
+
+    it 'sets the primary_key_name' do
+      AttributeObject.primary_key_name = 'name'
+      AttributeObject.instance_variable_get("@primary_key_name").should == 'name'
+    end
+  end
+
   describe '.attributes' do
     it 'returns a hash of the defined attributes' do
       AttributeObject.attributes.should == { :name => { :type => String, :options => {} }, :posts => { :type => [Post], :options => {} }, :user => { :type => User, :options => {} } }
+    end
+  end
+
+  describe '#primary_key' do
+    it 'returns the value at the primary_key_name' do
+      obj = AttributeObject.new
+      obj.primary_key.should == obj.send(AttributeObject.primary_key_name)
     end
   end
 end
