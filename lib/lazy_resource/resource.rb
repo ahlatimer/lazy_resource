@@ -4,6 +4,11 @@ module LazyResource
     include ActiveModel::Conversion
     include Attributes, Mapping, Types, UrlGeneration
 
+    included do
+      extend ActiveModel::Callbacks
+      define_model_callbacks :create, :update, :save, :destroy
+    end
+
     def self.site=(site)
       @site = site
     end
@@ -64,9 +69,11 @@ module LazyResource
 
       def create(attributes={})
         new(attributes).tap do |resource|
-          request = Request.new(resource.collection_url, resource, :method => :post, :params => { :user => attributes })
-          request_queue.queue(request)
-          fetch_all
+          resource.run_callbacks :create do
+            request = Request.new(resource.collection_url, resource, :method => :post, :params => { :user => attributes })
+            request_queue.queue(request)
+            fetch_all
+          end
         end
       end
     end
@@ -113,26 +120,34 @@ module LazyResource
 
     def save
       return true if !changed?
-      new_record? ? create : update
-      self.persisted = true
+      run_callbacks :save do
+        new_record? ? create : update
+        self.persisted = true
+      end
     end
 
     def create
-      request = Request.new(self.collection_url, self, { :method => :post, :params => attribute_params })
-      self.class.request_queue.queue(request)
-      self.class.fetch_all
+      run_callbacks :create do
+        request = Request.new(self.collection_url, self, { :method => :post, :params => attribute_params })
+        self.class.request_queue.queue(request)
+        self.class.fetch_all
+      end
     end
 
     def update
-      request = Request.new(self.element_url, self, { :method => :put, :params => attribute_params })
-      self.class.request_queue.queue(request)
-      self.class.fetch_all
+      run_callbacks :update do
+        request = Request.new(self.element_url, self, { :method => :put, :params => attribute_params })
+        self.class.request_queue.queue(request)
+        self.class.fetch_all
+      end
     end
 
     def destroy
-      request = Request.new(self.element_url, self, { :method => :delete })
-      self.class.request_queue.queue(request)
-      self.class.fetch_all
+      run_callbacks :destroy do
+        request = Request.new(self.element_url, self, { :method => :delete })
+        self.class.request_queue.queue(request)
+        self.class.fetch_all
+      end
     end
 
     def update_attributes(attributes={})

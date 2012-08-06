@@ -314,4 +314,70 @@ describe LazyResource::Resource do
       User.request_queue.should == Thread.current[:request_queue]
     end
   end
+
+  describe 'callbacks' do
+    before :each do
+      LazyResource::HttpMock.respond_to do |responder|
+        responder.post('http://example.com/users', '')
+        responder.put('http://example.com/users/1', '')
+        responder.delete('http://example.com/users/1', '')
+      end
+    end
+
+    describe 'create' do
+      it 'adds a before_create callback' do
+        User.respond_to?(:before_create).should == true
+      end
+
+      it 'adds a around_create callback' do
+        User.respond_to?(:around_create).should == true
+      end
+
+      it 'adds a after_create callback' do
+        User.respond_to?(:after_create).should == true
+      end
+    end
+
+    describe 'update' do
+      it 'adds a before_update callback' do
+        User.respond_to?(:before_update).should == true
+      end
+
+      it 'adds a around_update callback' do
+        User.respond_to?(:around_update).should == true
+      end
+
+      it 'adds a after_update callback' do
+        User.respond_to?(:after_update).should == true
+      end
+    end
+
+    describe 'save' do
+      it 'adds a before_save callback' do
+        User.respond_to?(:before_save).should == true
+      end
+
+      it 'adds a around_save callback' do
+        User.respond_to?(:around_save).should == true
+      end
+
+      it 'adds a after_save callback' do
+        User.respond_to?(:after_save).should == true
+      end
+    end
+
+    describe 'destroy' do
+      it 'adds a before_destroy callback' do
+        User.respond_to?(:before_destroy).should == true
+      end
+
+      it 'adds a around_destroy callback' do
+        User.respond_to?(:around_destroy).should == true
+      end
+
+      it 'adds a after_destroy callback' do
+        User.respond_to?(:after_destroy).should == true
+      end
+    end
+  end
 end
