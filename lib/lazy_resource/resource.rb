@@ -127,6 +127,15 @@ module LazyResource
       self.class.fetch_all
     end
 
+    def update_attributes(attributes={})
+      attributes.each do |name, value|
+        self.send("#{name}=", value)
+      end
+      request = Request.new(self.element_url, self, { :method => :put, :params => { self.class.element_name.to_sym => attributes } })
+      self.class.request_queue.queue(request)
+      self.class.fetch_all
+    end
+
     def attribute_params
       { self.class.element_name.to_sym => changed_attributes.inject({}) do |hash, changed_attribute|
         hash.tap do |hash|

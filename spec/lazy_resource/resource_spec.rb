@@ -3,6 +3,10 @@ require 'spec_helper'
 class Admin < User; end
 
 describe LazyResource::Resource do
+  before :each do
+    Thread.current[:request_queue].clear_stubs unless Thread.current[:request_queue].nil?
+  end
+
   describe '#new' do
     it 'creates an object with the specified attributes' do
       user = User.new({ :name => 'Andrew', :id => 123 })
@@ -158,6 +162,31 @@ describe LazyResource::Resource do
       request = LazyResource::Request.new(*params)
       LazyResource::Request.should_receive(:new).with(*params).and_return(request)
       user.destroy
+    end
+  end
+
+  describe '#update_attributes' do
+    before :each do
+      LazyResource::HttpMock.respond_to do |responder|
+        responder.put('http://example.com/users/1', '')
+      end
+    end
+
+    it 'issues a PUT request to the resource\'s element url with the updated attributes' do
+      user = User.load(:name => 'Andrew', :id => 1)
+      params = ['http://example.com/users/1', user, {
+        :method => :put,
+        :params => { :user => { :name => 'James' } }
+      }]
+      request = LazyResource::Request.new(*params)
+      LazyResource::Request.should_receive(:new).with(*params).and_return(request)
+      user.update_attributes(:name => 'James')
+    end
+
+    it 'updates the local attributes' do
+      user = User.load(:name => 'Andrew', :id => 1)
+      user.update_attributes(:name => 'James')
+      user.name.should == 'James'
     end
   end
 
