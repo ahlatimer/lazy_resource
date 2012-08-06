@@ -110,17 +110,19 @@ module LazyResource
     end
 
     def create
-      url = self.class.site.to_s.gsub(/\/$/, '')
-      url << self.collection_path
-      request = Request.new(url, self, { :method => :post, :params => attribute_params })
+      request = Request.new(self.collection_url, self, { :method => :post, :params => attribute_params })
       self.class.request_queue.queue(request)
       self.class.fetch_all
     end
 
     def update
-      url = self.class.site.to_s.gsub(/\/$/, '')
-      url << self.class.element_path(self.primary_key)
-      request = Request.new(url, self, { :method => :put, :params => attribute_params })
+      request = Request.new(self.element_url, self, { :method => :put, :params => attribute_params })
+      self.class.request_queue.queue(request)
+      self.class.fetch_all
+    end
+
+    def destroy
+      request = Request.new(self.element_url, self, { :method => :delete })
       self.class.request_queue.queue(request)
       self.class.fetch_all
     end

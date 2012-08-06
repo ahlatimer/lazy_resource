@@ -9,6 +9,10 @@ class Item
     def collection_name
       'items'
     end
+
+    def site
+      'http://example.com/'
+    end
   end
 
   def initialize
@@ -18,7 +22,6 @@ class Item
   def primary_key
     1
   end
-
 end
 
 describe LazyResource::UrlGeneration do
@@ -43,6 +46,20 @@ describe LazyResource::UrlGeneration do
       item = Item.new
       Item.should_receive(:collection_path)
       item.collection_path
+    end
+  end
+
+  describe '#element_url' do
+    it 'builds a full URL for the element' do
+      item = Item.new
+      item.element_url.should == 'http://example.com/items/1'
+    end
+  end
+
+  describe '#collection_url' do
+    it 'builds a full URL for the collection' do
+      item = Item.new
+      item.collection_url.should == 'http://example.com/items'
     end
   end
 

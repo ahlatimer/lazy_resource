@@ -6,12 +6,22 @@ module LazyResource
       self.class.element_path(self.primary_key, options)
     end
 
+    def element_url(options = nil)
+      url = self.class.site.to_s.gsub(/\/$/, '')
+      url << self.element_path(options)
+    end
+
     def new_element_path
       self.class.new_element_path
     end
 
     def collection_path(options = nil)
       self.class.collection_path(options)
+    end
+
+    def collection_url(options = nil)
+      url = self.class.site.to_s.gsub(/\/$/, '')
+      url << self.collection_path(options)
     end
 
     def split_options(options = {})

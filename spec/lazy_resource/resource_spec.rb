@@ -143,6 +143,24 @@ describe LazyResource::Resource do
     end
   end
 
+  describe '#destroy' do
+    before :each do
+      LazyResource::HttpMock.respond_to do |responder|
+        responder.delete('http://example.com/users/1', '')
+      end
+    end
+
+    it 'issues a DELETE request to the resource\'s element url' do
+      user = User.load(:name => 'Andrew', :id => 1)
+      params = ['http://example.com/users/1', user, {
+        :method => :delete
+      }]
+      request = LazyResource::Request.new(*params)
+      LazyResource::Request.should_receive(:new).with(*params).and_return(request)
+      user.destroy
+    end
+  end
+
   describe '#attribute_params' do
     it 'returns a hash of all of the changed attributes' do
       user = User.new(:name => 'Andrew')
