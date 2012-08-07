@@ -153,4 +153,17 @@ describe LazyResource::Relation do
       relation.respond_to?(:[]).should == true
     end
   end
+
+  describe '#method_missing' do
+    it 'acts like an array' do
+      relation = LazyResource::Relation.new(User)
+      relation.should_receive(:to_a).and_return([])
+      relation.method_missing(:[], 0)
+    end
+
+    it 'raises an error if a non-array method is called' do
+      relation = LazyResource::Relation.new(User)
+      lambda { relation.foo }.should raise_error(NoMethodError)
+    end
+  end
 end
