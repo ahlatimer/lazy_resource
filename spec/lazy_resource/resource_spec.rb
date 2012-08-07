@@ -210,6 +210,13 @@ describe LazyResource::Resource do
     end
   end
 
+  describe '#as_json' do
+    it 'returns the resource as a hash' do
+      user = User.load(:id => 1, :name => 'Andrew')
+      user.as_json.should == { :id => 1, :name => 'Andrew' }
+    end
+  end
+
   describe '.find' do
     it 'generates a new resource and associated request and adds it to the request queue' do
       LazyResource::Request.should_receive(:new)

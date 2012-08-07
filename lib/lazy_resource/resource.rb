@@ -163,5 +163,17 @@ module LazyResource
         end
       end }
     end
+
+    def as_json(options={})
+      self.class.attributes.inject({}) do |hash, (attribute_name, attribute_options)|
+        attribute_type = attribute_options[:type]
+
+        # Skip blank attributes
+        unless self.instance_variable_get("@#{attribute_name}").nil?
+          hash[attribute_name.to_sym] = self.send(:"#{attribute_name}")
+        end
+        hash
+      end
+    end
   end
 end
