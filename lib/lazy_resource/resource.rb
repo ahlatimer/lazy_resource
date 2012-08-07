@@ -41,12 +41,12 @@ module LazyResource
       end
 
       def find(id, params={}, options={})
-        resource = self.new
-        resource.fetched = false
-        resource.persisted = true
-        request = Request.new(self.element_path(id, params), resource, options)
-        request_queue.queue(request)
-        resource
+        self.new(self.primary_key_name => id).tap do |resource|
+          resource.fetched = false
+          resource.persisted = true
+          request = Request.new(resource.element_url(params), resource, options)
+          request_queue.queue(request)
+        end
       end
 
       def where(where_values)

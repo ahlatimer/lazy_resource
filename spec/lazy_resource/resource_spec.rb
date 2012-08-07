@@ -218,11 +218,28 @@ describe LazyResource::Resource do
   end
 
   describe '.find' do
+    before :each do
+      LazyResource::HttpMock.respond_to do |responder|
+        responder.get('http://example.com/users/1', { :name => 'Andrew' }.to_json)
+      end
+    end
+
     it 'generates a new resource and associated request and adds it to the request queue' do
       LazyResource::Request.should_receive(:new)
       User.request_queue.should_receive(:queue)
       user = User.find(1)
       user.fetched?.should == false
+    end
+
+    it 'sets the primary key' do
+      user = User.find(1)
+      user.id.should == 1
+      user.primary_key.should == 1
+    end
+
+    it 'finds the object' do
+      user = User.find(1)
+      user.name.should == 'Andrew'
     end
   end
 
