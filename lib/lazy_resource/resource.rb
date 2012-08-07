@@ -168,7 +168,7 @@ module LazyResource
       self.class.attributes.inject({}) do |hash, (attribute_name, attribute_options)|
         attribute_type = attribute_options[:type]
 
-        # Skip blank attributes
+        # Skip nil attributes (need to use instance_variable_get to avoid the stub relations that get added for associations."
         unless self.instance_variable_get("@#{attribute_name}").nil?
           hash[attribute_name.to_sym] = self.send(:"#{attribute_name}")
         end
