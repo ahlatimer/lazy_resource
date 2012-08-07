@@ -115,6 +115,12 @@ module LazyResource
       super || result.respond_to?(method, include_private)
     end
 
+    def as_json(options = {})
+      to_a.map do |record|
+        record.as_json
+      end
+    end
+
     def method_missing(name, *args, &block)
       if result.respond_to?(name)
         self.to_a.send(name, *args, &block)

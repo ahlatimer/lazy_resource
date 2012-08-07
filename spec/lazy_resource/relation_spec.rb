@@ -29,6 +29,15 @@ describe LazyResource::Relation do
     end
   end
 
+  describe '#as_json' do
+    it 'returns the relation as an array of hashes' do
+      users = [User.load(:id => 1, :name => 'Andrew'), User.load(:id => 2, :name => 'James')]
+      users_collection = LazyResource::Relation.new(User, :fetched => true)
+      users_collection.load(users)
+      users_collection.as_json.should == [{ :id => 1, :name => 'Andrew' }, { :id => 2, :name => 'James' }]
+    end
+  end
+
   describe '.resource_queue' do
     it 'creates a new resource queue if one does not already exist' do
       LazyResource::Relation.resource_queue.should_not be_nil
