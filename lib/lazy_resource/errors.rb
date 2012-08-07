@@ -10,7 +10,7 @@ module LazyResource
     def to_s
       message = "Failed."
       message << "  Response code = #{response.code}." if response.respond_to?(:code)
-      message << "  Response message = #{response.message}." if response.respond_to?(:message)
+      message << "  Response message = #{response.body}." if response.respond_to?(:body)
       message
     end
   end
@@ -33,7 +33,7 @@ module LazyResource
 
   # 3xx Redirection
   class Redirection < ConnectionError # :nodoc:
-    def to_s; response.headers['Location'] ? "#{super} => #{response.headers['Location']}" : super; end
+    def to_s; (response.headers['Location'] || response.headers[:Location]) ? "#{super} => #{response.headers['Location'] || response.headers[:Location]}" : super; end
   end
 
   # 4xx Client Error
@@ -66,7 +66,7 @@ module LazyResource
   # 405 Method Not Allowed
   class MethodNotAllowed < ClientError # :nodoc:
     def allowed_methods
-      @response['Allow'].split(',').map { |verb| verb.strip.downcase.to_sym }
+      @response.headers['Allow'].split(',').map { |verb| verb.strip.downcase.to_sym }
     end
   end
 end
