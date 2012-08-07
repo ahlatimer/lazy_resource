@@ -7,6 +7,8 @@ module LazyResource
     included do
       extend ActiveModel::Callbacks
       define_model_callbacks :create, :update, :save, :destroy
+
+      include ActiveModel::Validations
     end
 
     def self.site=(site)

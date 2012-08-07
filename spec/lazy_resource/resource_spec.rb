@@ -380,4 +380,17 @@ describe LazyResource::Resource do
       end
     end
   end
+
+  describe 'validations' do
+    class User
+      validates_presence_of :name
+    end
+
+    it 'validates' do
+      user = User.new
+      user.valid?.should == false
+      user.name = 'Andrew'
+      user.valid?.should == true
+    end
+  end
 end
