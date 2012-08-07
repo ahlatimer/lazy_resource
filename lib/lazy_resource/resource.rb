@@ -71,19 +71,14 @@ module LazyResource
 
       def create(attributes={})
         new(attributes).tap do |resource|
-          resource.run_callbacks :create do
-            request = Request.new(resource.collection_url, resource, :method => :post, :params => { :user => attributes })
-            request_queue.queue(request)
-            fetch_all
-          end
+          resource.create
         end
       end
     end
 
     def initialize(attributes={})
       self.tap do |resource|
-        resource.load(attributes)
-        resource.persisted = false
+        resource.load(attributes, false)
       end
     end
 
@@ -133,6 +128,7 @@ module LazyResource
         request = Request.new(self.collection_url, self, { :method => :post, :params => attribute_params })
         self.class.request_queue.queue(request)
         self.class.fetch_all
+        self.changed_attributes.clear
       end
     end
 
@@ -141,6 +137,7 @@ module LazyResource
         request = Request.new(self.element_url, self, { :method => :put, :params => attribute_params })
         self.class.request_queue.queue(request)
         self.class.fetch_all
+        self.changed_attributes.clear
       end
     end
 
@@ -156,9 +153,7 @@ module LazyResource
       attributes.each do |name, value|
         self.send("#{name}=", value)
       end
-      request = Request.new(self.element_url, self, { :method => :put, :params => { self.class.element_name.to_sym => attributes } })
-      self.class.request_queue.queue(request)
-      self.class.fetch_all
+      self.update
     end
 
     def attribute_params

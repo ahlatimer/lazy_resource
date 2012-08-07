@@ -47,7 +47,7 @@ module LazyResource
           def #{name}=(value)
             self.class.fetch_all if !fetched?
 
-            #{name}_will_change! unless @#{name} == value
+            #{name}_will_change! unless @#{name} == value || (!fetched? && persisted?)
             @#{name} = value
           end
         RUBY

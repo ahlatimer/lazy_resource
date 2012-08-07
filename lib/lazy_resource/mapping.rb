@@ -40,12 +40,12 @@ module LazyResource
       end
     end
 
-    def load(hash)
+    def load(hash, persisted=true)
       hash.fetched = true and return hash if hash.kind_of?(LazyResource::Mapping)
 
       self.tap do |resource|
-        resource.fetched = true
-        resource.persisted = true
+        resource.persisted = persisted
+        resource.fetched = false
         
         hash = hash[resource.class.root_node_name.to_s] if resource.class.root_node_name && hash.key?(resource.class.root_node_name.to_s)
         hash.each do |name, value|
@@ -65,6 +65,8 @@ module LazyResource
             resource.send(:"#{name}=", type.parse(value)) rescue StandardError
           end
         end
+
+        resource.fetched = true
       end
     end
   end

@@ -103,6 +103,7 @@ describe LazyResource::Resource do
 
       it 'calls #update' do
         user = User.load(:name => 'Andrew')
+        user.name = 'James'
         user.should_receive(:update)
         user.save
       end
@@ -126,20 +127,32 @@ describe LazyResource::Resource do
       LazyResource::Request.should_receive(:new).with(*params).and_return(request)
       user.create
     end
+
+    it 'resets the dirty attributes' do
+      user = User.new(:name => 'Andrew')
+      params = ['http://example.com/users', user, {
+        :method => :post,
+        :params => { :user => { 'name' => 'Andrew' } }
+      }]
+      user.create
+      user.changed?.should == false
+      user.changed_attributes.should == {}
+    end
   end
 
   describe '#update' do
     before :each do
       LazyResource::HttpMock.respond_to do |responder|
-        responder.put('http://example.com/users/1', '{ "name": "Andrew" }')
+        responder.put('http://example.com/users/1', '{ "name": "James" }')
       end
     end
 
     it 'issues a PUT request with the set attributes' do
       user = User.load(:name => 'Andrew', :id => 1)
+      user.name = 'James'
       params = ['http://example.com/users/1', user, {
         :method => :put,
-        :params => { :user => { 'name' => 'Andrew', 'id' => 1 } }
+        :params => { :user => { 'name' => 'James' } }
       }]
       request = LazyResource::Request.new(*params)
       LazyResource::Request.should_receive(:new).with(*params).and_return(request)
@@ -176,7 +189,7 @@ describe LazyResource::Resource do
       user = User.load(:name => 'Andrew', :id => 1)
       params = ['http://example.com/users/1', user, {
         :method => :put,
-        :params => { :user => { :name => 'James' } }
+        :params => { :user => { 'name' => 'James' } }
       }]
       request = LazyResource::Request.new(*params)
       LazyResource::Request.should_receive(:new).with(*params).and_return(request)
@@ -257,7 +270,7 @@ describe LazyResource::Resource do
       user = User.new(:name => 'Andrew')
       params = ['http://example.com/users', user, {
         :method => :post,
-        :params => { :user => { :name => 'Andrew' } }
+        :params => { :user => { 'name' => 'Andrew' } }
       }]
       request = LazyResource::Request.new(*params)
       LazyResource::Request.should_receive(:new).with(*params).and_return(request)
