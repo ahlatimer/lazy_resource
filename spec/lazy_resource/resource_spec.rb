@@ -278,6 +278,13 @@ describe LazyResource::Resource do
     end
   end
 
+  describe '.all' do
+    it 'creates a new relation with no options' do
+      users = User.all
+      users.where_values.should be_nil
+    end
+  end
+
   describe '.create' do
     before :each do
       LazyResource::HttpMock.respond_to do |responder|
@@ -334,6 +341,17 @@ describe LazyResource::Resource do
     it 'sets the site' do
       User.site = 'http://github.com'
       User.site.should == 'http://github.com'
+    end
+  end
+
+  describe '.root_node_name=' do
+    before :each do
+      LazyResource::Mapping.root_node_name = nil
+    end
+
+    it 'sets the root node name of the Mapping module' do
+      LazyResource::Resource.root_node_name = 'data'
+      LazyResource::Mapping.root_node_name.should == 'data'
     end
   end
 

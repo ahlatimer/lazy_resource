@@ -19,6 +19,10 @@ module LazyResource
       @site
     end
 
+    def self.root_node_name=(node_name)
+      LazyResource::Mapping.root_node_name = node_name
+    end
+
     module ClassMethods
       # Gets the URI of the REST resources to map for this class.  The site variable is required for
       # Active Async's mapping to work.
@@ -67,6 +71,10 @@ module LazyResource
       
       def page(page_value)
         Relation.new(self, :page_value => page_value)
+      end
+
+      def all
+        Relation.new(self)
       end
 
       def create(attributes={})
