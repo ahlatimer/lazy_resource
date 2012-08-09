@@ -2,12 +2,16 @@ require 'lazy_resource'
 require 'benchmark'
 
 LazyResource.configure do |config|
-  config.site = "https://api.github.com/"
+  config.site = "https://api.github.com"
 end
 
-class User < LazyResource::Base; end
+class User
+  include LazyResource::Resource
+end
 
-class Repo < LazyResource::Base
+class Repo
+  include LazyResource::Resource
+
   attribute :id,          Fixnum
   attribute :pushed_at,   DateTime
   attribute :owner,       User
@@ -16,8 +20,10 @@ class Repo < LazyResource::Base
   attribute :description, String
 end
 
-class User < LazyResource::Base
-  self.primary_key = 'login'
+class User
+  include LazyResource::Resource
+
+  self.primary_key_name = 'login'
 
   attribute :id,          Fixnum
   attribute :login,       String

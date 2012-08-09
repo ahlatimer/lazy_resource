@@ -69,11 +69,11 @@ Or install it yourself as:
     me = User.find(1)
     me.posts.all       # => GET /users/1/posts
 
-### That's cool, but what if my end-point doesn't map with my attribute or association name?
+### That's cool, but what if my end-point doesn't map with my association name?
 
     class Photo < LazyResource::Base
       attribute :id, Integer
-      attribute :urls, Hash, :from => 'source'
+      attribute :urls, Hash
       attribute :photographer, User, :from => 'users'
     end
 
