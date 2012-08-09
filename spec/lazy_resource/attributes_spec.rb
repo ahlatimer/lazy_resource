@@ -79,6 +79,36 @@ describe LazyResource::Attributes do
           @foo.fetched = false
           @foo.user
         end
+
+        describe ':using' do
+          before :each do
+            AttributeObject.attribute(:posts_url, String)
+            AttributeObject.attribute(:user_url, String)
+            AttributeObject.attribute(:posts, [Post], :using => :posts_url)
+            AttributeObject.attribute(:user, User, :using => :user_url)
+            @foo.send(:instance_variable_set, "@posts_url", 'http://example.com/path/to/posts')
+            @foo.send(:instance_variable_set, "@user_url", 'http://example.com/path/to/user')
+          end
+
+          it 'finds a collection using the specified url' do
+            relation = LazyResource::Relation.new(Post)
+            request = LazyResource::Request.new(@foo.posts_url, relation)
+            LazyResource::Request.should_receive(:new).with(@foo.posts_url, relation).and_return(request)
+            LazyResource::Relation.should_receive(:new).with(Post, :fetched => true).and_return(relation)
+            @foo.class.request_queue.should_receive(:queue).with(request)
+            @foo.fetched = false
+            @foo.posts
+          end
+
+          it 'finds a singular resource with the specified url' do
+            resource = User.load({})
+            request = LazyResource::Request.new(@foo.user_url, resource)
+            LazyResource::Request.should_receive(:new).with(@foo.user_url, resource).and_return(request)
+            @foo.class.request_queue.should_receive(:queue).with(request)
+            @foo.fetched = false
+            @foo.user
+          end
+        end
       end
     end
   end
@@ -110,7 +140,11 @@ describe LazyResource::Attributes do
 
   describe '.attributes' do
     it 'returns a hash of the defined attributes' do
-      AttributeObject.attributes.should == { :name => { :type => String, :options => {} }, :posts => { :type => [Post], :options => {} }, :user => { :type => User, :options => {} } }
+      AttributeObject.attributes.should == { :name => { :type => String, :options => {} },
+                                             :posts => { :type => [Post], :options => { :using => :posts_url } },
+                                             :user => { :type => User, :options => { :using => :user_url } },
+                                             :posts_url => { :type => String, :options => {} },
+                                             :user_url => { :type => String, :options => {} } }
     end
   end
 

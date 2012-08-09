@@ -7,9 +7,9 @@ module LazyResource
       def attribute(name, type, options={})
         attributes[name] = { :type => type, :options => options }
 
-        create_getter(name, type) unless options[:skip_getter]
-        create_setter(name, type) unless options[:skip_setter]
-        create_question(name, type) unless options[:skip_question] || options[:skip_getter]
+        create_getter(name, type, options) unless options[:skip_getter]
+        create_setter(name, type, options) unless options[:skip_setter]
+        create_question(name, type, options) unless options[:skip_question] || options[:skip_getter]
 
         @attribute_methods_generated = false
         define_attribute_methods [name]
@@ -42,7 +42,8 @@ module LazyResource
         @collection_name ||= ActiveSupport::Inflector.pluralize(element_name)
       end
 
-      def create_setter(name, type)
+      protected
+      def create_setter(name, type, options={})
         class_eval <<-RUBY, __FILE__, __LINE__ + 1
           def #{name}=(value)
             self.class.fetch_all if !fetched?
@@ -53,24 +54,53 @@ module LazyResource
         RUBY
       end
 
-      def create_getter(name, type)
+      def create_getter(name, type, options={})
         method = <<-RUBY
           def #{name}
             self.class.fetch_all if !fetched
         RUBY
 
         if type.is_a?(Array) && type.first.include?(LazyResource::Resource)
-          method << <<-RUBY
-            if @#{name}.nil?
-              @#{name} = #{type.first}.where(:"\#{self.class.element_name}_id" => self.primary_key)
-            end
-          RUBY
+          if options[:using].nil?
+            method << <<-RUBY
+              if @#{name}.nil?
+                @#{name} = #{type.first}.where(:"\#{self.class.element_name}_id" => self.primary_key)
+              end
+            RUBY
+          else
+            method << <<-RUBY
+              return [] if self.#{options[:using]}.nil?
+
+              if @#{name}.nil?
+                @#{name} = LazyResource::Relation.new(#{type.first}, :fetched => true)
+                @#{name}.fetched = false
+                request = LazyResource::Request.new(self.#{options[:using]}, @#{name})
+                self.class.request_queue.queue(request)
+              end
+
+              @#{name}
+            RUBY
+          end
         elsif type.include?(LazyResource::Resource)
-          method << <<-RUBY
-            if @#{name}.nil?
-              @#{name} = #{type}.where(:"\#{self.class.element_name}_id" => self.primary_key)
-            end
-          RUBY
+          if options[:using].nil?
+            method << <<-RUBY
+              if @#{name}.nil?
+                @#{name} = #{type}.where(:"\#{self.class.element_name}_id" => self.primary_key)
+              end
+            RUBY
+          else
+            method << <<-RUBY
+              return [] if self.#{options[:using]}.nil?
+
+              if @#{name}.nil?
+                @#{name} = #{type}.new
+                request = LazyResource::Request.new(self.#{options[:using]}, @#{name})
+                self.class.request_queue.queue(request)
+              end
+
+              @#{name}
+            RUBY
+          end
         end
 
         method << <<-RUBY
@@ -81,7 +111,7 @@ module LazyResource
         class_eval method, __FILE__, __LINE__ + 1
       end
 
-      def create_question(name, type)
+      def create_question(name, type, options={})
         class_eval <<-RUBY, __FILE__, __LINE__ + 1
           def #{name}?
             !!self.#{name}
