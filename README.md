@@ -100,3 +100,20 @@ Make sure you have some decent test coverage, and please don't bump up
 the version number. If you want to maintain your own version, go for it,
 but put it in a separate commit so I can ignore it when I merge the rest
 of your stuff in.
+
+## Recognition
+
+Thanks to:
+
+* [Typhoeus](http://github.com/typhoeus/typhoeus) for the http request
+  queuing code that forms the foundation of LazyResource.
+* [ActiveResource](http://github.com/rails/activeresource) for the idea
+  (and a bit of code).
+* [Get Satisfaction](http://getsatisfaction.com) for supplying the Red
+  Bull and letting me open source this.
+
+## TODO
+
+ * Clean up `LazyResource::Attributes#create_setter`
+ * Add more specs for associations
+
