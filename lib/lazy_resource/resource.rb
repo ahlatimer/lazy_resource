@@ -178,7 +178,17 @@ module LazyResource
 
         # Skip nil attributes (need to use instance_variable_get to avoid the stub relations that get added for associations."
         unless self.instance_variable_get("@#{attribute_name}").nil?
-          hash[attribute_name.to_sym] = self.send(:"#{attribute_name}")
+          value = self.send(:"#{attribute_name}")
+
+          if (attribute_type.is_a?(::Array) && attribute_type.first.include?(LazyResource::Resource))
+            value = value.map { |v| v.as_json }
+          elsif attribute_type.include?(LazyResource::Resource)
+            value = value.as_json
+          elsif attribute_type == DateTime
+            value = value.to_s
+          end
+
+          hash[attribute_name.to_sym] = value
         end
         hash
       end

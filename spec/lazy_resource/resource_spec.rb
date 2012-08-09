@@ -215,6 +215,18 @@ describe LazyResource::Resource do
       user = User.load(:id => 1, :name => 'Andrew')
       user.as_json.should == { :id => 1, :name => 'Andrew' }
     end
+
+    it 'converts associations to hashes' do
+      params = { :id => 1, :name => 'Andrew', :post => { :id => 1 }, :comments => [{ :id => 1 }, { :id => 2 }] }
+      user = User.load(params)
+      user.as_json.should == params
+    end
+
+    it 'converts datetimes to strings' do
+      params = { :id => 1, :created_at => DateTime.now.to_s }
+      user = User.load(params)
+      user.as_json.should == params
+    end
   end
 
   describe '.find' do
