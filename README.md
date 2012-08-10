@@ -32,8 +32,10 @@ Or install it yourself as:
 
 ### Define a model:
 
-    class User < LazyResource::Base
-      site 'http://example.com'
+    class User
+      include LazyResource::Resource
+
+      self.site = 'http://example.com'
 
       attribute :id, Integer
       attribute :first_name, String
@@ -53,15 +55,19 @@ Or install it yourself as:
 
 ### What about associations?
 
-    class Post < LazyResource::Base
-      site 'http://example.com'
+    class Post
+      include LazyResource::Resource
+
+      self.site = 'http://example.com'
+
       attribute :id, Integer
       attribute :title, String
       attribute :body, String
       attribute :user, User
     end
 
-    class User < LazyResource::Base
+    class User
+      include LazyResource::Resource
       # Attributes that have a type in an array are has-many
       attribute :posts, [Post]
     end
@@ -71,7 +77,9 @@ Or install it yourself as:
 
 ### That's cool, but what if my end-point doesn't map with my association name?
 
-    class Photo < LazyResource::Base
+    class Photo
+      include LazyResource::Resource
+
       attribute :id, Integer
       attribute :urls, Hash
       attribute :photographer, User, :from => 'users'
@@ -109,8 +117,8 @@ Thanks to:
   queuing code that forms the foundation of LazyResource.
 * [ActiveResource](http://github.com/rails/activeresource) for the idea
   (and a bit of code).
-* [Get Satisfaction](http://getsatisfaction.com) for supplying the Red
-  Bull and letting me open source this.
+* [Get Satisfaction](http://getsatisfaction.com) for putting food on my
+  table.
 
 ## TODO
 
