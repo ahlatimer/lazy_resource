@@ -109,6 +109,12 @@ the version number. If you want to maintain your own version, go for it,
 but put it in a separate commit so I can ignore it when I merge the rest
 of your stuff in.
 
+## It's alpha, yo
+
+I'm not using this in production anywhere (yet), so use at your own
+risk. It's got a pretty comprehensive test suite, but I'm sure there
+are at least a few bugs. If you find one, [report it](https://github.com/ahlatimer/lazy_resource/issues).
+
 ## Recognition
 
 Thanks to:
