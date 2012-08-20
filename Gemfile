@@ -7,6 +7,7 @@ gemspec
 gem 'pry'
 gem 'debugger'
 gem 'rake'
+gem 'twitter_cldr'
 
 gem 'rspec'
 gem 'simplecov', :require => false

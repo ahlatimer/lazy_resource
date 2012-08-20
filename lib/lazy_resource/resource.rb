@@ -193,7 +193,19 @@ module LazyResource
           elsif attribute_type.include?(LazyResource::Resource)
             value = value.as_json
           elsif attribute_type == DateTime
-            value = value.to_s
+            if options[:include_time_ago_in_words] && defined?(TwitterCldr)
+              hash[:"#{attribute_name}_in_words"] = (DateTime.now - (DateTime.now - value).to_f).localize.ago.to_s
+            end
+
+            if options[:strftime]
+              value = self.send(attribute_name).strftime(options[:strftime])
+            end
+
+            if options[attribute_name.to_sym] && options[attribute_name.to_sym][:strftime]
+              value = self.send(attribute_name).strftime(options[attribute_name.to_sym][:strftime])
+            end
+
+            value = value.to_s unless value.is_a?(String)
           end
 
           hash[attribute_name.to_sym] = value

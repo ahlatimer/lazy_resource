@@ -227,6 +227,29 @@ describe LazyResource::Resource do
       user = User.load(params)
       user.as_json.should == params
     end
+
+    it 'converts dates to strings using the strftime parameter' do
+      params = { :id => 1, :created_at => DateTime.now }
+      user = User.load(params)
+      params[:created_at] = params[:created_at].strftime("%D")
+      user.as_json(:strftime => '%D').should == params
+    end
+
+    it 'converts dates to strings for the passed parameter' do
+      params = { :id => 1, :created_at => DateTime.now.to_s, :updated_at => DateTime.now }
+      user = User.load(params)
+      params[:updated_at] = params[:updated_at].strftime("%D")
+      user.as_json(:updated_at => { :strftime => "%D" }).should == params
+    end
+
+    it 'adds a _in_words for datetimes when include_time_ago_in_words option is set' do
+      require 'twitter_cldr'
+
+      params = { :id => 1, :created_at => DateTime.now.to_s }
+      user = User.load(params)
+      params[:created_at_in_words] = "1 second ago"
+      user.as_json(:include_time_ago_in_words => true).should == params
+    end
   end
 
   describe '.find' do
