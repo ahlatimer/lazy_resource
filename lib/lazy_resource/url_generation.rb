@@ -51,6 +51,7 @@ module LazyResource
       # +query_options+ - A \hash to add items to the query string for the request.
       def element_path(id, prefix_options = {}, query_options = nil, from = nil)
         prefix_options, query_options = split_options(prefix_options) if query_options.nil?
+        from = self.from if from.nil? && respond_to?(:from)
         "#{prefix(prefix_options)}#{from || collection_name}/#{URI.escape id.to_s}#{query_string(query_options)}"
       end
 
@@ -60,6 +61,7 @@ module LazyResource
       # * +prefix_options+ - A hash to add a prefix to the request for nested URLs (e.g., <tt>:account_id => 19</tt>
       # would yield a URL like <tt>/accounts/19/purchases/new.json</tt>).
       def new_element_path(prefix_options = {}, from = nil)
+        from = self.from if from.nil? && respond_to?(:from)
         "#{prefix(prefix_options)}#{from || collection_name}/new"
       end
 
@@ -72,6 +74,7 @@ module LazyResource
       # * +query_options+ - A hash to add items to the query string for the request.
       def collection_path(prefix_options = {}, query_options = nil, from = nil)
         prefix_options, query_options = split_options(prefix_options) if query_options.nil?
+        from = self.from if from.nil? && respond_to?(:from)
         "#{prefix(prefix_options)}#{from || collection_name}#{query_string(query_options)}"
       end
 

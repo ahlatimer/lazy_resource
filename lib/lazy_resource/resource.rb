@@ -40,6 +40,14 @@ module LazyResource
         @site = site
       end
 
+      def from
+        @from
+      end
+
+      def from=(from)
+        @from = from
+      end
+
       def request_queue
         Thread.current[:request_queue] ||= Typhoeus::Hydra.new
       end

@@ -356,6 +356,46 @@ describe LazyResource::Resource do
     end
   end
 
+  describe '.from' do
+    before :each do
+      @from = User.from
+    end
+
+    after :each do
+      User.from = @from
+    end
+
+    it 'returns the from value if set' do
+      User.from = 'people'
+      User.from.should == 'people'
+    end
+
+    it 'uses the from value to generate a collection path' do
+      User.from = 'people'
+      User.collection_path.should == '/people'
+    end
+
+    it 'uses the from value to generate an element path' do
+      User.from = 'people'
+      User.element_path(1).should == '/people/1'
+    end
+  end
+
+  describe '.from=' do
+    before :each do
+      @from = User.from
+    end
+
+    after :each do
+      User.from = @from
+    end
+
+    it 'sets the from value' do
+      User.from = 'people'
+      User.from.should == 'people'
+    end
+  end
+
   describe '.root_node_name=' do
     before :each do
       LazyResource::Mapping.root_node_name = nil
