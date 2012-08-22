@@ -2,7 +2,7 @@ module LazyResource
   module Mapping
     extend ActiveSupport::Concern
 
-    attr_accessor :fetched, :persisted
+    attr_accessor :fetched, :persisted, :other_attributes
 
     def fetched?
       @fetched
@@ -26,13 +26,17 @@ module LazyResource
       end
 
       def load(objects)
+        objects.fetched = true and return objects if objects.kind_of?(LazyResource::Mapping)
+
         if objects.is_a?(Array)
-          objects.map do |object|
-            self.new.load(object)
+          Relation.new(self, :fetched => true).tap do |relation|
+            relation.load(objects)
           end
         else
           if self.root_node_name && objects.key?(self.root_node_name.to_s)
-            self.load(objects[self.root_node_name.to_s])
+            self.load(objects.delete(self.root_node_name.to_s)).tap do |obj|
+              obj.other_attributes = objects
+            end
           else
             self.new.load(objects)
           end
@@ -46,8 +50,13 @@ module LazyResource
       self.tap do |resource|
         resource.persisted = persisted
         resource.fetched = false
-        
-        hash = hash[resource.class.root_node_name.to_s] if resource.class.root_node_name && hash.key?(resource.class.root_node_name.to_s)
+
+        if resource.class.root_node_name && hash.key?(resource.class.root_node_name.to_s)
+          other_attributes = hash
+          hash = other_attributes.delete(resource.class.root_node_name.to_s)
+          self.other_attributes = other_attributes
+        end
+
         hash.each do |name, value|
           attribute = self.class.attributes[name.to_sym]
           next if attribute.nil?

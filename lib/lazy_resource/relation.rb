@@ -8,7 +8,7 @@ module LazyResource
       end
     end
 
-    attr_accessor :fetched, :klass, :values, :from, :site
+    attr_accessor :fetched, :klass, :values, :from, :site, :other_attributes
 
     def initialize(klass, options = {})
       @klass = klass
@@ -41,7 +41,16 @@ module LazyResource
 
     def load(objects)
       @fetched = true
-      @result = @klass.load(objects)
+
+      if @klass.root_node_name && objects.respond_to?(:key?) && objects.key?(@klass.root_node_name.to_s)
+        other_objects = objects.dup
+        objects = other_objects.delete(@klass.root_node_name.to_s)
+        @other_attributes = other_objects
+      end
+
+      @result = objects.map do |object|
+        @klass.load(object)
+      end
     end
 
     def resource_queue

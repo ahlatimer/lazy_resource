@@ -25,7 +25,15 @@ describe LazyResource::Relation do
       users = [{ :id => '1', :name => 'Andrew' }, { :id => '1', :name => 'James' }]
       users_collection = LazyResource::Relation.new(User)
       users_collection.load(users)
-      users_collection.to_a.should == User.load(users)
+      users_collection.to_a.should == User.load(users).to_a
+    end
+
+    it 'adds any other attributes to #other_attributes' do
+      User.root_node_name = :data
+      users = { 'data' => [{ :id => '1', :name => 'Andrew' }, { :id => '1', :name => 'James' }], 'length' => 12 }
+      users_collection = LazyResource::Relation.new(User)
+      users_collection.load(users)
+      users_collection.other_attributes.should == { 'length' => 12 }
     end
   end
 

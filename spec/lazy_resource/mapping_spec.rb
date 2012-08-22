@@ -72,7 +72,7 @@ describe LazyResource::Mapping do
       user.name.should == 'Andrew'
       user.created_at.should == @now
       user.post.should == @post
-      user.comments.should == @comments
+      user.comments.to_a.should == @comments
     end
 
     it 'loads an array of objects' do
@@ -142,6 +142,25 @@ describe LazyResource::Mapping do
       Foo.root_node_name = 'data'
       user = Foo.load('data' => { :id => 123 })
       user.id.should == 123
+    end
+
+    it 'sets any other attributes in the hash to #other_attributes for a single resource' do
+      Foo.root_node_name = :data
+      user = Foo.load('data' => { :id => 123 }, 'length' => 12)
+      user.other_attributes.should == { 'length' => 12 }
+    end
+
+    it 'sets any other attributes in the hash to #other_attributes for a collection' do
+      Foo.root_node_name = :data
+      users = Foo.load('data' => [{:id => 123}], 'length' => 12)
+      users.other_attributes.should == { 'length' => 12 }
+    end
+
+    it 'sets any other attributes in the hash to #other_attributes for an instantiated object' do
+      Foo.root_node_name = :data
+      user = Foo.new
+      user.load('data' => { :id => 123 }, 'length' => 12)
+      user.other_attributes.should == { 'length' => 12 }
     end
   end
 
