@@ -21,10 +21,15 @@ module LazyResource
 
     def on_complete_proc
       Proc.new do |response|
+        log_response(response) if LazyResource.debug && LazyResource.logger
         @response = response
         handle_errors unless SUCCESS_STATUSES.include?(@response.code)
         parse
       end
+    end
+
+    def log_response(response)
+      LazyResource.logger.info "[#{response.code}](#{response.time}): #{self.url}"
     end
 
     def parse

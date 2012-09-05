@@ -24,6 +24,7 @@ require 'lazy_resource/errors'
 module LazyResource
   extend ActiveSupport::Autoload
   
+  autoload :ConfigurationDelegate
   autoload :Attributes
   autoload :Mapping
   autoload :Relation
@@ -34,6 +35,22 @@ module LazyResource
   autoload :UrlGeneration
 
   def self.configure(&block)
-    yield Resource
+    yield LazyResource::ConfigurationDelegate.new
+  end
+
+  def self.logger=(logger)
+    @logger = logger
+  end
+
+  def self.logger
+    @logger
+  end
+
+  def self.debug=(debug)
+    @debug = debug
+  end
+
+  def self.debug
+    @debug = @debug.nil? ? false : @debug
   end
 end
