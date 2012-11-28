@@ -29,7 +29,7 @@ module LazyResource
     end
 
     def log_response(response)
-      LazyResource.logger.info "\t[#{response.code}](#{(response.time.to_i * 1000).ceil}ms): #{self.url}"
+      LazyResource.logger.info "\t[#{response.code}](#{((response.time || 0) * 1000).ceil}ms): #{self.url}"
     end
 
     def parse
