@@ -21,6 +21,8 @@ require 'active_support/core_ext/uri'
 require 'lazy_resource/version'
 require 'lazy_resource/errors'
 
+require 'lazy_resource/ext/typhoeus'
+
 module LazyResource
   extend ActiveSupport::Autoload
   
@@ -54,6 +56,3 @@ module LazyResource
     @debug = @debug.nil? ? false : @debug
   end
 end
-
-# Needs to load after LR is already defined (depends on the logger)
-require 'lazy_resource/ext/hydra'
