@@ -1,7 +1,7 @@
 module Typhoeus
   class Hydra
     def run_with_logging
-      log = LazyResource.debug && LazyResource.logger && @multi.active > 0
+      log = LazyResource.debug && LazyResource.logger && @multi.active > 0 && @multi.running <= 0
       if log
         LazyResource.logger.info "Processing requests:"
         start_time = Time.now
