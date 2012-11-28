@@ -54,3 +54,6 @@ module LazyResource
     @debug = @debug.nil? ? false : @debug
   end
 end
+
+# Needs to load after LR is already defined (depends on the logger)
+require 'lazy_resource/ext/hydra'
