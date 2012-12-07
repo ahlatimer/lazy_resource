@@ -259,6 +259,10 @@ describe LazyResource::Resource do
       end
     end
 
+    after :each do
+      User.default_headers = {}
+    end
+
     it 'generates a new resource and associated request and adds it to the request queue' do
       LazyResource::Request.should_receive(:new)
       User.request_queue.should_receive(:queue)
@@ -275,6 +279,20 @@ describe LazyResource::Resource do
     it 'finds the object' do
       user = User.find(1)
       user.name.should == 'Andrew'
+    end
+
+    it 'uses default headers' do
+      User.default_headers = { :foo => 'bar' }
+      request = LazyResource::Request.new('/path/to/something', User.new)
+      LazyResource::Request.should_receive(:new).with(anything, anything, :headers => { :foo => 'bar' }).and_return(request)
+      User.find(1)
+    end
+
+    it 'allows default headers to be overwritten' do
+      User.default_headers = { :foo => 'bar' }
+      request = LazyResource::Request.new('/path/to/something', User.new)
+      LazyResource::Request.should_receive(:new).with(anything, anything, :headers => { :foo => 'buzz' }).and_return(request)
+      User.find(1, {}, { :headers => { :foo => 'buzz' } })
     end
   end
 

@@ -25,7 +25,7 @@ module LazyResource
 
     def send_to_request_queue!
       while(relation = @queue.pop)
-        request = Request.new(url_for(relation), relation)
+        request = Request.new(url_for(relation), relation, relation.headers)
         request_queue.queue(request)
       end
     end

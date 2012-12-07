@@ -76,6 +76,8 @@ module LazyResource
         self.new(self.primary_key_name => id).tap do |resource|
           resource.fetched = false
           resource.persisted = true
+          options[:headers] ||= {}
+          options[:headers].reverse_merge!(default_headers)
           request = Request.new(resource.element_url(params), resource, options)
           request_queue.queue(request)
         end

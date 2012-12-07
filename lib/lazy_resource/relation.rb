@@ -53,6 +53,10 @@ module LazyResource
       end
     end
 
+    def headers
+      @headers ||= @klass.default_headers
+    end
+
     def resource_queue
       self.class.resource_queue
     end
