@@ -33,9 +33,16 @@ module LazyResource
             relation.load(objects)
           end
         else
-          if self.root_node_name && objects.key?(self.root_node_name.to_s)
-            self.load(objects.delete(self.root_node_name.to_s)).tap do |obj|
-              obj.other_attributes = objects
+          if self.root_node_name
+            root_node_names = self.root_node_name.is_a?(Array) ? self.root_node_name : [self.root_node_name]
+            mapped_name = (root_node_names.map(&:to_s) & objects.keys).first
+
+            if mapped_name.nil?
+              self.new.load(objects)
+            else
+              self.load(objects.delete(mapped_name)).tap do |obj|
+                obj.other_attributes = objects
+              end
             end
           else
             self.new.load(objects)
