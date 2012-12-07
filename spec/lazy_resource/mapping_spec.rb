@@ -162,6 +162,19 @@ describe LazyResource::Mapping do
       user.load('data' => { :id => 123 }, 'length' => 12)
       user.other_attributes.should == { 'length' => 12 }
     end
+
+    it 'supports multiple root node names with a single resource' do
+      Foo.root_node_name = [:data, :datum]
+      user = Foo.new
+      user.load('data' => { :id => 123 })
+      user.id.should == 123
+    end
+
+    it 'supports multiple root node names with a collection' do
+      Foo.root_node_name = [:data, :datum]
+      users = Foo.load('data' => [{ :id => 123 }, { :id => 124 }])
+      users.map(&:id).should == [123, 124]
+    end
   end
 
   describe '#load' do

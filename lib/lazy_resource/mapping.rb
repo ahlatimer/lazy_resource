@@ -33,20 +33,20 @@ module LazyResource
             relation.load(objects)
           end
         else
-          if self.root_node_name
-            root_node_names = self.root_node_name.is_a?(Array) ? self.root_node_name : [self.root_node_name]
-            mapped_name = (root_node_names.map(&:to_s) & objects.keys).first
-
-            if mapped_name.nil?
-              self.new.load(objects)
-            else
-              self.load(objects.delete(mapped_name)).tap do |obj|
-                obj.other_attributes = objects
-              end
+          if mapped_name = self.mapped_root_node_name(objects)
+            self.load(objects.delete(mapped_name)).tap do |obj|
+              obj.other_attributes = objects
             end
           else
             self.new.load(objects)
           end
+        end
+      end
+
+      def mapped_root_node_name(objects)
+        if self.root_node_name
+          root_node_names = self.root_node_name.is_a?(Array) ? self.root_node_name : [self.root_node_name]
+          mapped_name = (root_node_names.map(&:to_s) & objects.keys).first
         end
       end
     end
@@ -58,9 +58,9 @@ module LazyResource
         resource.persisted = persisted
         resource.fetched = false
 
-        if resource.class.root_node_name && hash.key?(resource.class.root_node_name.to_s)
+        if mapped_name = resource.class.mapped_root_node_name(hash)
           other_attributes = hash
-          hash = other_attributes.delete(resource.class.root_node_name.to_s)
+          hash = other_attributes.delete(mapped_name)
           self.other_attributes = other_attributes
         end
 
