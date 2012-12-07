@@ -379,6 +379,55 @@ describe LazyResource::Resource do
     end
   end
 
+  describe '.default_headers' do
+    after :each do
+      User.default_headers = {}
+    end
+
+    it 'returns the default headers if they are defined' do
+      User.default_headers = { :foo => 'bar' }
+      User.default_headers.should == { :foo => 'bar' }
+    end
+
+    it 'returns LazyResource::Resource.default_headers if default_headers is not defined' do
+      User.send(:remove_instance_variable, "@default_headers")
+      User.default_headers.should == LazyResource::Resource.default_headers
+    end
+  end
+
+  describe '.default_headers=' do
+    after :each do
+      User.default_headers = {}
+    end
+
+    it 'sets the default headers' do
+      User.default_headers = { :foo => 'bar' }
+      User.default_headers.should == { :foo => 'bar' }
+    end
+  end
+
+  describe 'self.default_headers' do
+    after :each do
+      LazyResource::Resource.default_headers = {}
+    end
+
+    it 'returns the global default headers' do
+      LazyResource::Resource.default_headers = { :foo => 'bar' }
+      LazyResource::Resource.default_headers.should == { :foo => 'bar' }
+    end
+  end
+
+  describe 'self.default_headers=' do
+    after :each do
+      LazyResource::Resource.default_headers = {}
+    end
+
+    it 'sets the global default headers' do
+      LazyResource::Resource.default_headers = { :foo => 'bar' }
+      LazyResource::Resource.default_headers.should == { :foo => 'bar' }
+    end
+  end
+
   describe '.from' do
     before :each do
       @from = User.from

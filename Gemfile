@@ -13,3 +13,4 @@ gem 'rspec'
 gem 'simplecov', :require => false
 gem 'guard-rspec'
 gem 'growl'
+gem 'rb-fsevent'

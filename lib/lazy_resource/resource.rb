@@ -19,6 +19,14 @@ module LazyResource
       @site
     end
 
+    def self.default_headers=(headers)
+      @default_headers = headers
+    end
+
+    def self.default_headers
+      @default_headers || {}
+    end
+
     def self.root_node_name=(node_name)
       LazyResource::Mapping.root_node_name = node_name
     end
@@ -35,9 +43,21 @@ module LazyResource
       end
 
       # Sets the URI of the REST resources to map for this class to the value in the +site+ argument.
-      # The site variable is required for Active Async's mapping to work.
+      # The site variable is required for LazyResources's mapping to work.
       def site=(site)
         @site = site
+      end
+
+      def default_headers
+        if defined?(@default_headers)
+          @default_headers
+        else
+          LazyResource::Resource.default_headers
+        end
+      end
+
+      def default_headers=(headers)
+        @default_headers = headers
       end
 
       def from
