@@ -22,7 +22,7 @@ module LazyResource
     end
 
     def from
-      @from || self.klass.collection_name
+      @from || self.klass.from || self.klass.collection_name
     end
 
     def collection_name
