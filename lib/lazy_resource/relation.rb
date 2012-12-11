@@ -42,10 +42,10 @@ module LazyResource
     def load(objects)
       @fetched = true
 
-      if @klass.root_node_name && objects.respond_to?(:key?) && objects.key?(@klass.root_node_name.to_s)
-        other_objects = objects.dup
-        objects = other_objects.delete(@klass.root_node_name.to_s)
-        @other_attributes = other_objects
+      if mapped_name = @klass.mapped_root_node_name(objects)
+        other_attributes = objects.dup
+        objects = other_attributes.delete(mapped_name)
+        @other_attributes = other_attributes
       end
 
       @result = objects.map do |object|

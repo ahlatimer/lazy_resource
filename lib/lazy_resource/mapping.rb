@@ -44,7 +44,7 @@ module LazyResource
       end
 
       def mapped_root_node_name(objects)
-        if self.root_node_name
+        if self.root_node_name && objects.respond_to?(:keys)
           root_node_names = self.root_node_name.is_a?(Array) ? self.root_node_name : [self.root_node_name]
           mapped_name = (root_node_names.map(&:to_s) & objects.keys).first
         end

@@ -163,17 +163,44 @@ describe LazyResource::Mapping do
       user.other_attributes.should == { 'length' => 12 }
     end
 
-    it 'supports multiple root node names with a single resource' do
-      Foo.root_node_name = [:data, :datum]
-      user = Foo.new
-      user.load('data' => { :id => 123 })
-      user.id.should == 123
-    end
+    describe 'multiple root node names' do
+      it 'supports multiple root node names with an instantiated object' do
+        Foo.root_node_name = [:data, :datum]
+        user = Foo.new
+        user.load('data' => { :id => 123 })
+        user.id.should == 123
+      end
 
-    it 'supports multiple root node names with a collection' do
-      Foo.root_node_name = [:data, :datum]
-      users = Foo.load('data' => [{ :id => 123 }, { :id => 124 }])
-      users.map(&:id).should == [123, 124]
+      it 'suppors multiple root node names with a single resource' do
+        Foo.root_node_name = [:data, :datum]
+        user = Foo.load('data' => { :id => 123 })
+        user.id.should == 123
+      end
+
+      it 'supports multiple root node names with a collection' do
+        Foo.root_node_name = [:data, :datum]
+        users = Foo.load('data' => [{ :id => 123 }, { :id => 124 }])
+        users.map(&:id).should == [123, 124]
+      end
+
+      it 'sets any other attributes in the hash to #other_attributes for an instantiated object' do
+        Foo.root_node_name = [:data, :datum]
+        user = Foo.new
+        user.load('data' => { :id => 123 }, 'length' => 12)
+        user.other_attributes.should == { 'length' => 12 }
+      end
+
+      it 'sets any other attributes in the hash to #other_attributes for a single resource' do
+        Foo.root_node_name = [:data, :datum]
+        user = Foo.load('data' => { :id => 123 }, 'length' => 12)
+        user.other_attributes.should == { 'length' => 12 }
+      end
+
+      it 'sets any other attributes in the hash to #other_attributes for a collection' do
+        Foo.root_node_name = [:data, :datum]
+        users = Foo.load('data' => [{ :id => 123 }, { :id => 124 }], 'length' => 12)
+        users.other_attributes.should == { 'length' => 12 }
+      end
     end
   end
 
