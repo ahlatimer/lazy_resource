@@ -91,9 +91,9 @@ describe LazyResource::Attributes do
           end
 
           it 'finds a collection using the specified url' do
-            relation = LazyResource::Relation.new(Post)
+            relation = LazyResource::Relation.new(Post, :headers => {})
             request = LazyResource::Request.new(@foo.posts_url, relation)
-            LazyResource::Request.should_receive(:new).with(@foo.posts_url, relation).and_return(request)
+            LazyResource::Request.should_receive(:new).with(@foo.posts_url, relation, :headers => relation.headers).and_return(request)
             LazyResource::Relation.should_receive(:new).with(Post, :fetched => true).and_return(relation)
             @foo.class.request_queue.should_receive(:queue).with(request)
             @foo.fetched = false

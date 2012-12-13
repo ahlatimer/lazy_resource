@@ -73,8 +73,8 @@ module LazyResource
 
               if @#{name}.nil?
                 @#{name} = LazyResource::Relation.new(#{type.first}, :fetched => true)
+                request = LazyResource::Request.new(self.#{options[:using]}, @#{name}, :headers => @#{name}.headers)
                 @#{name}.fetched = false
-                request = LazyResource::Request.new(self.#{options[:using]}, @#{name})
                 self.class.request_queue.queue(request)
               end
 
