@@ -46,7 +46,6 @@ Or install it yourself as:
 
     me = User.find(1)                                                    # => GET /users/1
     bobs = User.where(:first_name => 'Bob')                              # => GET /users?first_name=Bob
-    sam = User.find_by_first_name('Sam')                                 # => GET /users?first_name=Sam
     terry = User.new(:first_name => 'Terry', :last_name => 'Simpson')
     terry.save                                                           # => POST /users
     terry.last_name = 'Jackson'
@@ -96,6 +95,39 @@ was saved. Pretty neat, eh?
 Sure thing! Take a look at the files in the `examples` directory, or
 read through the specs.
 
+### How about a section of random features?
+
+Here you go:
+
+Fetch associations without hitting the URL generation code.
+
+    class Photo
+      include LazyResource::Resource
+
+      attribute :id, Fixnum
+      attribute :photographer_url, String
+      attribute :photographer, User, :using => :photographer_url
+
+      # or define it yourself
+      def photographer_url
+        "/path/to/photographer"
+      end
+    end
+
+Parsing responses like { 'photo': ... }
+
+    class Photo
+      include LazyResource::Resource
+
+      self.root_node_name = 'photo'
+    end
+
+or multiple options
+
+    class Photo
+      self.root_node_name = ['photo', 'photos']
+    end
+
 ## Contributing
 
 1. Fork it
@@ -129,5 +161,4 @@ Thanks to:
 ## TODO
 
  * Clean up `LazyResource::Attributes#create_setter`
- * Add more specs for associations
 
