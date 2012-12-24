@@ -53,6 +53,7 @@ module LazyResource
 
     def load(hash, persisted=true)
       hash.fetched = true and return hash if hash.kind_of?(LazyResource::Mapping)
+      return if hash.nil?
 
       self.tap do |resource|
         resource.persisted = persisted

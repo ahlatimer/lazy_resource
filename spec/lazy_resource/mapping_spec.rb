@@ -75,6 +75,18 @@ describe LazyResource::Mapping do
       user.comments.to_a.should == @comments
     end
 
+    it 'should not attempt to load nil associations' do
+      user = Foo.load({
+        :id => 123,
+        :name => 'Andrew',
+        :post => nil
+      })
+
+      user.id.should == 123
+      user.name.should == 'Andrew'
+      user.post.should == nil
+    end
+
     it 'loads an array of objects' do
       users = Foo.load([
         {
