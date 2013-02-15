@@ -32,57 +32,65 @@ Or install it yourself as:
 
 ### Define a model:
 
-    class User
-      include LazyResource::Resource
+```ruby
+class User
+  include LazyResource::Resource
 
-      self.site = 'http://example.com'
+  self.site = 'http://example.com'
 
-      attribute :id, Integer
-      attribute :first_name, String
-      attribute :last_name, String
-    end
+  attribute :id, Integer
+  attribute :first_name, String
+  attribute :last_name, String
+end
+```
 
 ### Then use it:
 
-    me = User.find(1)                                                    # => GET /users/1
-    bobs = User.where(:first_name => 'Bob')                              # => GET /users?first_name=Bob
-    terry = User.new(:first_name => 'Terry', :last_name => 'Simpson')
-    terry.save                                                           # => POST /users
-    terry.last_name = 'Jackson'
-    terry.save                                                           # => PUT /users/4
-    terry.destroy                                                        # => DELETE /users/4
+```ruby
+me = User.find(1)                                                    # => GET /users/1
+bobs = User.where(:first_name => 'Bob')                              # => GET /users?first_name=Bob
+terry = User.new(:first_name => 'Terry', :last_name => 'Simpson')
+terry.save                                                           # => POST /users
+terry.last_name = 'Jackson'
+terry.save                                                           # => PUT /users/4
+terry.destroy                                                        # => DELETE /users/4
+```
 
 ### What about associations?
 
-    class Post
-      include LazyResource::Resource
+```ruby
+class Post
+  include LazyResource::Resource
 
-      self.site = 'http://example.com'
+  self.site = 'http://example.com'
 
-      attribute :id, Integer
-      attribute :title, String
-      attribute :body, String
-      attribute :user, User
-    end
+  attribute :id, Integer
+  attribute :title, String
+  attribute :body, String
+  attribute :user, User
+end
 
-    class User
-      include LazyResource::Resource
-      # Attributes that have a type in an array are has-many
-      attribute :posts, [Post]
-    end
+class User
+  include LazyResource::Resource
+  # Attributes that have a type in an array are has-many
+  attribute :posts, [Post]
+end
 
-    me = User.find(1)
-    me.posts.all       # => GET /users/1/posts
+me = User.find(1)
+me.posts.all       # => GET /users/1/posts
+```
 
 ### That's cool, but what if my end-point doesn't map with my association name?
 
-    class Photo
-      include LazyResource::Resource
+```ruby
+class Photo
+  include LazyResource::Resource
 
-      attribute :id, Integer
-      attribute :urls, Hash
-      attribute :photographer, User, :from => 'users'
-    end
+  attribute :id, Integer
+  attribute :urls, Hash
+  attribute :photographer, User, :from => 'users'
+end
+```
 
 ### I thought you said this was non-blocking?
 
@@ -101,32 +109,40 @@ Here you go:
 
 Fetch associations without hitting the URL generation code.
 
-    class Photo
-      include LazyResource::Resource
+```ruby
+class Photo
+  include LazyResource::Resource
 
-      attribute :id, Fixnum
-      attribute :photographer_url, String
-      attribute :photographer, User, :using => :photographer_url
+  attribute :id, Fixnum
+  attribute :photographer_url, String
+  attribute :photographer, User, :using => :photographer_url
 
-      # or define it yourself
-      def photographer_url
-        "/path/to/photographer"
-      end
-    end
+  # or define it yourself
+  def photographer_url
+    "/path/to/photographer"
+  end
+end
+```
 
 Parsing responses like { 'photo': ... }
 
-    class Photo
-      include LazyResource::Resource
+```ruby
+class Photo
+  include LazyResource::Resource
 
-      self.root_node_name = 'photo'
-    end
+  self.root_node_name = 'photo'
+end
+```
 
 or multiple options
 
-    class Photo
-      self.root_node_name = ['photo', 'photos']
-    end
+```ruby
+class Photo
+  include LazyResource::Resource
+
+  self.root_node_name = ['photo', 'photos']
+end
+```
 
 ## Contributing
 
@@ -140,12 +156,6 @@ Make sure you have some decent test coverage, and please don't bump up
 the version number. If you want to maintain your own version, go for it,
 but put it in a separate commit so I can ignore it when I merge the rest
 of your stuff in.
-
-## It's alpha, yo
-
-I'm not using this in production anywhere (yet), so use at your own
-risk. It's got a pretty comprehensive test suite, but I'm sure there
-are at least a few bugs. If you find one, [report it](https://github.com/ahlatimer/lazy_resource/issues).
 
 ## Recognition
 
