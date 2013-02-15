@@ -14,18 +14,14 @@ module LazyResource
       super(url, options)
 
       @resource = resource
-      self.on_complete = on_complete_proc
-
-      self
-    end
-
-    def on_complete_proc
-      Proc.new do |response|
+      self.on_complete do
         log_response(response) if LazyResource.debug && LazyResource.logger
         @response = response
         handle_errors unless SUCCESS_STATUSES.include?(@response.code)
         parse
       end
+
+      self
     end
 
     def log_response(response)

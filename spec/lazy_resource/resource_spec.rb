@@ -3,10 +3,6 @@ require 'spec_helper'
 class Admin < User; end
 
 describe LazyResource::Resource do
-  before :each do
-    Thread.current[:request_queue].clear_stubs unless Thread.current[:request_queue].nil?
-  end
-
   describe '#new' do
     it 'creates an object with the specified attributes' do
       user = User.new({ :name => 'Andrew', :id => 123 })

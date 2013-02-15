@@ -17,22 +17,22 @@ describe Typhoeus::Hydra do
     end
 
     it 'logs if logging is enabled, there are items to process, and the queue has not yet started processing' do
-      @multi.send(:instance_variable_set, "@active", 10)
-      @multi.send(:instance_variable_set, "@running", 0)
+      @multi.stub!(:easy_handles).and_return([1,2,3])
+      @multi.stub!(:running_count).and_return(0)
       LazyResource.logger.should_receive(:info).twice
       @hydra.run_with_logging
     end
 
     it 'does not log if there are no items to process' do
-      @multi.send(:instance_variable_set, "@active", 0)
-      @multi.send(:instance_variable_set, "@running", 0)
+      @multi.stub!(:easy_handles).and_return([])
+      @multi.stub!(:running_count).and_return(0)
       LazyResource.logger.should_not_receive(:info)
       @hydra.run_with_logging
     end
 
     it 'does not log if the queue is already being processed' do
-      @multi.send(:instance_variable_set, "@active", 10)
-      @multi.send(:instance_variable_set, "@running", 5)
+      @multi.stub!(:easy_handles).and_return([1,2,3])
+      @multi.stub!(:running_count).and_return(3)
       LazyResource.logger.should_not_receive(:info)
       @hydra.run_with_logging
     end

@@ -24,7 +24,8 @@ describe LazyResource do
     it 'logs when a request completes' do
       LazyResource.logger.should_receive(:info)
       request = LazyResource::Request.new('http://example.com', User.new)
-      request.on_complete_proc.call(Typhoeus::Response.new)
+      request.response = Typhoeus::Response.new
+      request.execute_callbacks
     end
   end
 end

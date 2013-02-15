@@ -22,40 +22,18 @@ describe LazyResource::Request do
 
     it 'sets a default Accept header of application/json' do
       request = LazyResource::Request.new('http://example.com/api', nil)
-      headers = request.send(:instance_variable_get, "@headers")
-      headers[:Accept].should == 'application/json'
+      request.options[:headers][:Accept].should == 'application/json'
     end
 
     it 'sets the default method of GET' do
       request = LazyResource::Request.new('http://example.com/api', nil)
-      request.send(:instance_variable_get, "@method").should == :get
+      request.options[:method].should == :get
     end
 
     it 'merges the headers from the current thread' do
       Thread.current[:default_headers] = { :"X-Access-Token" => 'abc' }
       request = LazyResource::Request.new('http://example.com/api', nil)
-      headers = request.send(:instance_variable_get, "@headers")
-      headers[:"X-Access-Token"].should == 'abc'
-    end
-  end
-
-  describe '#on_complete_proc' do
-    it 'raises an error unless 200 or 201' do
-      request = LazyResource::Request.new('http://example.com', nil)
-      response = Typhoeus::Response.new(:code => 404, :headers => {}, :body => '', :time => 0.3)
-      lambda { request.on_complete_proc.call(response) }.should raise_error(LazyResource::ConnectionError)
-    end
-
-    it 'does not raise an error on 200' do
-      request = LazyResource::Request.new('http://example.com', SampleResource.new)
-      response = Typhoeus::Response.new(:code => 200)
-      lambda { request.on_complete_proc.call(response) }.should_not raise_error(StandardError)
-    end
-
-    it 'does not raise an error on 201' do
-      request = LazyResource::Request.new('http://example.com', SampleResource.new)
-      response = Typhoeus::Response.new(:code => 201)
-      lambda { request.on_complete_proc.call(response) }.should_not raise_error(StandardError)
+      request.options[:headers][:"X-Access-Token"].should == 'abc'
     end
   end
 
