@@ -4,8 +4,8 @@ require File.expand_path('../lib/lazy_resource/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Andrew Latimer"]
   gem.email         = ["andrew@elpasoera.com"]
-  gem.description   = %q{ActiveResource with it's feet up. The write less, do more consumer of delicious APIs.}
-  gem.summary       = %q{ActiveResource with it's feet up. The write less, do more consumer of delicious APIs.}
+  gem.description   = %q{ActiveResource with its feet up. The write less, do more consumer of delicious APIs.}
+  gem.summary       = %q{ActiveResource with its feet up. The write less, do more consumer of delicious APIs.}
   gem.homepage      = "http://github.com/ahlatimer/lazy_resource"
 
   gem.files         = `git ls-files`.split($\)
