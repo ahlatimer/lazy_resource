@@ -25,4 +25,13 @@ module Ethon
       easy_handles.size > 0 && running_count <= 0
     end
   end
+
+  def logger
+    @logger ||= DevNull.new
+  end
+end
+
+class DevNull
+  def method_missing(*args, &block)
+  end
 end
