@@ -44,6 +44,7 @@ describe LazyResource::ResourceQueue do
     it 'sends the requests to the request queue and runs the request queue' do
       @queue.queue(@relation)
       @queue.should_receive(:send_to_request_queue!)
+      @queue.request_queue.stub(:items_queued?).and_return(true)
       @queue.request_queue.should_receive(:run)
       @queue.run
     end

@@ -17,7 +17,7 @@ module LazyResource
 
       def fetch_all
         self.resource_queue.send_to_request_queue! if self.respond_to?(:resource_queue)
-        self.request_queue.run if self.respond_to?(:request_queue)
+        self.request_queue.run if self.respond_to?(:request_queue) && self.request_queue.items_queued?
       end
 
       def attributes
