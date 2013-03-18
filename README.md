@@ -114,22 +114,16 @@ class Photo
   include LazyResource::Resource
 
   attribute :id, Fixnum
-  attribute :photographer_url, String
+
+  # define the route inline
+  attribute :location, Location, :route => '/location/:lat,:long'
+
+  # define the route using a method or attribute
   attribute :photographer, User, :route => :photographer_url
-
-  # or define it yourself
+  attribute :photographer_url, String
   def photographer_url
-    "/path/to/photographer"
+    "/photographer/:name"
   end
-
-  # or interpolate with values passed via where (e.g.,
-  # User.find(1).photographer.where(:foo => 'bar')
-  def photographer_url
-    "/path/to/photographer/:foo"
-  end
-
-  # or define the url inline
-  attribute :photographer, User, :route => '/path/to/photographer/:foo'
 end
 ```
 
