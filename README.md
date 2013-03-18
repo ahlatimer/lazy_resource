@@ -14,6 +14,8 @@ flair. Not only is it faster, it's better-looking, too.
 Don't believe me? Check out some of the examples in the `examples` directory
 to see for yourself.
 
+[![Build Status](https://travis-ci.org/ahlatimer/lazy_resource.png?branch=master)](https://travis-ci.org/ahlatimer/lazy_resource)
+
 ## Installation
 
 Add this line to your application's Gemfile:
