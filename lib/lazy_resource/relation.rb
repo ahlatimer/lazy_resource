@@ -9,11 +9,14 @@ module LazyResource
     end
 
     attr_accessor :fetched, :klass, :values, :from, :site, :other_attributes
+    attr_reader :route
 
     def initialize(klass, options = {})
       @klass = klass
+      @route = options.fetch(:where_values, {}).delete(:_route)
       @values = options.slice(:where_values, :order_value, :limit_value, :offset_value, :page_value)
       @fetched = options[:fetched] || false
+
       unless fetched?
         resource_queue.queue(self)
       end

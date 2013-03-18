@@ -55,4 +55,10 @@ module LazyResource
   def self.debug
     @debug = @debug.nil? ? false : @debug
   end
+
+  def self.deprecate(message, file, line)
+    if self.logger && self.debug
+      self.logger.info "#{message} from #{file}##{line}"
+    end
+  end
 end

@@ -31,10 +31,28 @@ module LazyResource
     end
 
     def url_for(relation)
-      url = ''
-      url << relation.klass.site
-      url << self.class.collection_path(relation.to_params, nil, relation.from)
-      url
+      if relation.route.nil?
+        url = ''
+        url << relation.klass.site
+        url << self.class.collection_path(relation.to_params, nil, relation.from)
+        url
+      else
+        url = relation.route
+        url.gsub!(/:\w*/) do |match|
+          attr = match[1..-1].to_sym
+          if relation.where_values.has_key?(attr)
+            relation.where_values[attr]
+          else
+            match
+          end
+        end
+
+        if url =~ /http/
+          url
+        else
+          relation.klass.site + url
+        end
+      end
     end
   end
 end

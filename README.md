@@ -115,12 +115,21 @@ class Photo
 
   attribute :id, Fixnum
   attribute :photographer_url, String
-  attribute :photographer, User, :using => :photographer_url
+  attribute :photographer, User, :route => :photographer_url
 
   # or define it yourself
   def photographer_url
     "/path/to/photographer"
   end
+
+  # or interpolate with values passed via where (e.g.,
+  # User.find(1).photographer.where(:foo => 'bar')
+  def photographer_url
+    "/path/to/photographer/:foo"
+  end
+
+  # or define the url inline
+  attribute :photographer, User, :route => '/path/to/photographer/:foo'
 end
 ```
 

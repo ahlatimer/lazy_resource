@@ -74,5 +74,29 @@ describe LazyResource::ResourceQueue do
       @queue.url_for(@relation).should == 'http://example.com/people'
       User.from = nil
     end
+
+    context 'using Relation#route' do
+      before :each do
+        @relation = User.where(:_route => '/people/:name')
+      end
+
+      it 'respects the route' do
+        @queue.url_for(@relation).should == 'http://example.com/people/:name'
+      end
+
+      it 'interpolates the route with where_values' do
+        @relation.where(:name => 'Andrew')
+        @queue.url_for(@relation).should == 'http://example.com/people/Andrew'
+      end
+
+      it 'adds the Relation\'s host if one is not already present' do
+        @queue.url_for(@relation).should == 'http://example.com/people/:name'
+      end
+
+      it 'does not add the Relation\'s host if one is already present' do
+        @relation = User.where(:_route => 'http://another_example.com/people/:name')
+        @queue.url_for(@relation).should == 'http://another_example.com/people/:name'
+      end
+    end
   end
 end

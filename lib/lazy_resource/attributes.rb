@@ -60,8 +60,13 @@ module LazyResource
             self.class.fetch_all if !fetched
         RUBY
 
+        route = options[:using] || options[:route]
+        if options[:using]
+          LazyResource.deprecate("Attribute option :using is deprecated. Please use :route instead.", __FILE__, __LINE__)
+        end
+
         if type.is_a?(Array) && type.first.include?(LazyResource::Resource)
-          if options[:using].nil?
+          if route.nil?
             method << <<-RUBY
               if @#{name}.nil?
                 @#{name} = #{type.first}.where(:"\#{self.class.element_name}_id" => self.primary_key)
@@ -69,20 +74,16 @@ module LazyResource
             RUBY
           else
             method << <<-RUBY
-              return [] if self.#{options[:using]}.nil?
-
               if @#{name}.nil?
-                @#{name} = LazyResource::Relation.new(#{type.first}, :fetched => true)
-                request = LazyResource::Request.new(self.#{options[:using]}, @#{name}, :headers => @#{name}.headers)
-                @#{name}.fetched = false
-                self.class.request_queue.queue(request)
+                route = self.respond_to?(#{route}) ? self.#{route} : #{route}
+                @#{name} = #{type.first}.where(:"\#{self.class.element_name}_id" => self.primary_key, :_route => route)
               end
 
               @#{name}
             RUBY
           end
         elsif type.include?(LazyResource::Resource)
-          if options[:using].nil?
+          if route.nil?
             method << <<-RUBY
               if @#{name}.nil?
                 @#{name} = #{type}.where(:"\#{self.class.element_name}_id" => self.primary_key)
@@ -90,12 +91,9 @@ module LazyResource
             RUBY
           else
             method << <<-RUBY
-              return [] if self.#{options[:using]}.nil?
-
               if @#{name}.nil?
-                @#{name} = #{type}.new
-                request = LazyResource::Request.new(self.#{options[:using]}, @#{name})
-                self.class.request_queue.queue(request)
+                route = self.respond_to?(#{route}) ? self.#{route} : #{route}
+                @#{name} = #{type}.where(:"\#{self.class.element_name}_id" => self.primary_key, :_route => route)
               end
 
               @#{name}

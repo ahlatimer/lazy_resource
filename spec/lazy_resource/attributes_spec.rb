@@ -80,7 +80,7 @@ describe LazyResource::Attributes do
           @foo.user
         end
 
-        describe ':using' do
+        context ':using' do
           before :each do
             AttributeObject.attribute(:posts_url, String)
             AttributeObject.attribute(:user_url, String)
@@ -91,22 +91,11 @@ describe LazyResource::Attributes do
           end
 
           it 'finds a collection using the specified url' do
-            relation = LazyResource::Relation.new(Post, :headers => {})
-            request = LazyResource::Request.new(@foo.posts_url, relation)
-            LazyResource::Request.should_receive(:new).with(@foo.posts_url, relation, :headers => relation.headers).and_return(request)
-            LazyResource::Relation.should_receive(:new).with(Post, :fetched => true).and_return(relation)
-            @foo.class.request_queue.should_receive(:queue).with(request)
-            @foo.fetched = false
-            @foo.posts
+            @foo.posts.route.should == 'http://example.com/path/to/posts'
           end
 
           it 'finds a singular resource with the specified url' do
-            resource = User.load({})
-            request = LazyResource::Request.new(@foo.user_url, resource)
-            LazyResource::Request.should_receive(:new).with(@foo.user_url, resource).and_return(request)
-            @foo.class.request_queue.should_receive(:queue).with(request)
-            @foo.fetched = false
-            @foo.user
+            @foo.user.route.should == 'http://example.com/path/to/user'
           end
         end
       end
