@@ -63,5 +63,16 @@ describe LazyResource::ResourceQueue do
     it 'creates a URL for the given resource' do
       @queue.url_for(@relation).should == 'http://example.com/users'
     end
+
+    it 'respects the "from" option when set on a Relation object' do
+      @relation.from = 'people'
+      @queue.url_for(@relation).should == 'http://example.com/people'
+    end
+
+    it 'respects the "from" option when set on a Resource class' do
+      User.from = 'people'
+      @queue.url_for(@relation).should == 'http://example.com/people'
+      User.from = nil
+    end
   end
 end

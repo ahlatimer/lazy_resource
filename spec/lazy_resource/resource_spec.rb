@@ -293,9 +293,19 @@ describe LazyResource::Resource do
   end
 
   describe '.where' do
+    after :each do
+      User.from = nil
+    end
+
     it 'creates a new relation with the passed where values' do
       users = User.where(:name => 'Andrew')
       users.where_values.should == { :name => 'Andrew' }
+    end
+
+    it 'forwards the from value' do
+      User.from = :bars
+      users = User.where(:foo => 'bar')
+      users.from.should == :bars
     end
   end
 
