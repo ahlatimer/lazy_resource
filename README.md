@@ -92,6 +92,11 @@ class Photo
   attribute :urls, Hash
   attribute :photographer, User, :from => 'users'
 end
+
+# similarly, model-level
+class User
+  self.from = 'people'
+end
 ```
 
 ### I thought you said this was non-blocking?
@@ -147,6 +152,13 @@ class Photo
 
   self.root_node_name = ['photo', 'photos']
 end
+```
+
+Parsing responses like { 'photos': ..., 'total': 100, 'page': 2, ... }
+
+```ruby
+photos = Photo.where(:user_id => 123)
+photos.other_attributes # => { 'total' => 100, 'page' => 2, ... }
 ```
 
 ## Contributing
