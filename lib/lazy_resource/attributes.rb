@@ -120,7 +120,7 @@ module LazyResource
     end
 
     def primary_key
-      self.instance_variable_get("@#{self.class.primary_key_name}")
+      self.send(self.class.primary_key_name)
     end
 
     included do

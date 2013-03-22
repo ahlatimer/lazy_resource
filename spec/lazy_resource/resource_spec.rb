@@ -290,6 +290,11 @@ describe LazyResource::Resource do
       LazyResource::Request.should_receive(:new).with(anything, anything, :headers => { :foo => 'buzz' }).and_return(request)
       User.find(1, {}, { :headers => { :foo => 'buzz' } })
     end
+
+    it 'does not trigger fetch_all' do
+      User.should_not_receive(:fetch_all)
+      10.times { User.find(1) }
+    end
   end
 
   describe '.where' do

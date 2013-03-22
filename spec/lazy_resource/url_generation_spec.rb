@@ -13,14 +13,15 @@ class Item
     def site
       'http://example.com/'
     end
+
+    def primary_key_name
+      'id'
+    end
   end
 
   def initialize
+    @id = 1
     @attributes = {} 
-  end
-
-  def primary_key
-    1
   end
 end
 
