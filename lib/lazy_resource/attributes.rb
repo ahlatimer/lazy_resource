@@ -55,6 +55,7 @@ module LazyResource
       end
 
       def create_getter(name, type, options={})
+        line = __LINE__ + 2
         method = <<-RUBY
           def #{name}
             self.class.fetch_all if !fetched
@@ -106,7 +107,7 @@ module LazyResource
           end
         RUBY
 
-        class_eval method, __FILE__, __LINE__ + 1
+        class_eval method, __FILE__, line
       end
 
       def create_question(name, type, options={})
@@ -119,7 +120,7 @@ module LazyResource
     end
 
     def primary_key
-      self.send(self.class.primary_key_name)
+      self.instance_variable_get("@#{self.class.primary_key_name}")
     end
 
     included do

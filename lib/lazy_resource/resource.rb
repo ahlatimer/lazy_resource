@@ -73,7 +73,8 @@ module LazyResource
       end
 
       def find(id, params={}, options={})
-        self.new(self.primary_key_name => id).tap do |resource|
+        self.new.tap do |resource|
+          resource.instance_variable_set("@#{self.primary_key_name}", id)
           resource.fetched = false
           resource.persisted = true
           options[:headers] ||= {}
