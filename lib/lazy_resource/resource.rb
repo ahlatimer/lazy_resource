@@ -69,7 +69,7 @@ module LazyResource
       end
 
       def request_queue
-        Thread.current[:request_queue] ||= Typhoeus::Hydra.new
+        Thread.current[:request_queue] ||= Typhoeus::Hydra.new(:max_concurrency => LazyResource.max_concurrency)
       end
 
       def find(id, params={}, options={})

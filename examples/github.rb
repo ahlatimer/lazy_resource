@@ -1,8 +1,16 @@
 require 'lazy_resource'
 require 'benchmark'
 
+class SimpleLogger
+  def info(message)
+    puts message
+  end
+end
+
 LazyResource.configure do |config|
   config.site = "https://api.github.com"
+  config.logger = SimpleLogger.new
+  config.debug = true
 end
 
 class User

@@ -56,6 +56,14 @@ module LazyResource
     @debug = @debug.nil? ? false : @debug
   end
 
+  def self.max_concurrency
+    @max_concurrency ||= 200
+  end
+
+  def self.max_concurrency=(max)
+    @max_concurrency = max
+  end
+
   def self.deprecate(message, file, line)
     if self.logger && self.debug
       self.logger.info "#{message} from #{file}##{line}"
