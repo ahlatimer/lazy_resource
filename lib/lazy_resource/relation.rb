@@ -8,7 +8,7 @@ module LazyResource
       end
     end
 
-    attr_accessor :fetched, :klass, :values, :from, :site, :other_attributes
+    attr_accessor :loaded, :klass, :values, :from, :site, :other_attributes, :payload
     attr_reader :route
 
     def initialize(klass, options = {})
@@ -42,7 +42,8 @@ module LazyResource
       params
     end
 
-    def load(objects)
+    def load(objects=nil)
+      objects ||= @json
       @fetched = true
 
       if mapped_name = @klass.mapped_root_node_name(objects)
@@ -115,11 +116,17 @@ module LazyResource
     end
 
     def fetched?
-      @fetched
+      !!@response
+    end
+
+    def parsed?
+      !!@json
     end
 
     def to_a
       resource_queue.run if !fetched?
+      self.parse if !parsed?
+      self.load if !loaded?
       result
     end
 

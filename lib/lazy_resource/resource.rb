@@ -204,6 +204,8 @@ module LazyResource
     end
 
     def as_json(options={})
+      self.parse if !parsed?
+      self.load if !loaded?
       self.class.attributes.inject({}) do |hash, (attribute_name, attribute_options)|
         attribute_type = attribute_options[:type]
 

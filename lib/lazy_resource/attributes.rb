@@ -47,6 +47,8 @@ module LazyResource
         class_eval <<-RUBY, __FILE__, __LINE__ + 1
           def #{name}=(value)
             self.class.fetch_all if !fetched?
+            self.parse if !parsed?
+            self.load if !loaded?
 
             #{name}_will_change! unless @#{name} == value || (!fetched? && persisted?)
             @#{name} = value
@@ -58,7 +60,9 @@ module LazyResource
         line = __LINE__ + 2
         method = <<-RUBY
           def #{name}
-            self.class.fetch_all if !fetched
+            self.class.fetch_all if !fetched?
+            self.parse if !parsed?
+            self.load if !loaded?
         RUBY
 
         route = options[:using] || options[:route]

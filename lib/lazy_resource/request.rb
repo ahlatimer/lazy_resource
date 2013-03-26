@@ -18,7 +18,7 @@ module LazyResource
         log_response(response) if LazyResource.debug && LazyResource.logger
         @response = response
         handle_errors unless SUCCESS_STATUSES.include?(@response.code)
-        parse
+        set_payload
       end
 
       self
@@ -28,9 +28,9 @@ module LazyResource
       LazyResource.logger.info "\t[#{response.code}](#{((response.time || 0) * 1000).ceil}ms): #{self.url}"
     end
 
-    def parse
+    def set_payload
       unless self.response.body.nil? || self.response.body == ''
-        @resource.load(JSON.parse(self.response.body))
+        @resource.payload = self.response.body
       end
     end
 

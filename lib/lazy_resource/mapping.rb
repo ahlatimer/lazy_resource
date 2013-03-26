@@ -2,10 +2,22 @@ module LazyResource
   module Mapping
     extend ActiveSupport::Concern
 
-    attr_accessor :fetched, :persisted, :other_attributes
+    attr_accessor :loaded, :persisted, :other_attributes
 
     def fetched?
-      @fetched
+      !@response.nil?
+    end
+
+    def parse
+      @json ||= JSON.parse(@response) if fetched?
+    end
+
+    def parsed?
+      !!@json 
+    end
+
+    def loaded?
+      @loaded
     end
 
     def self.root_node_name=(node)
@@ -52,12 +64,12 @@ module LazyResource
     end
 
     def load(hash, persisted=true)
-      hash.fetched = true and return hash if hash.kind_of?(LazyResource::Mapping)
+      hash.loaded = true and return hash if hash.kind_of?(LazyResource::Mapping)
       return if hash.nil?
 
       self.tap do |resource|
         resource.persisted = persisted
-        resource.fetched = false
+        resource.loaded = false
 
         if mapped_name = resource.class.mapped_root_node_name(hash)
           other_attributes = hash
@@ -83,7 +95,7 @@ module LazyResource
           end
         end
 
-        resource.fetched = true
+        resource.loaded = true
       end
     end
   end

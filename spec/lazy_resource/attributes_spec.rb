@@ -17,6 +17,21 @@ class AttributeObject
     @fetched
   end
 
+  def parsed?
+    @json
+  end
+
+  def parse
+    @json ||= JSON.parse(@response) if @response
+  end
+
+  def loaded?
+    @loaded
+  end
+
+  def load(object=nil)
+  end
+
   def element_name
     "attribute_object"
   end
