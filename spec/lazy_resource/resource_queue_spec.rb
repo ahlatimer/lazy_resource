@@ -44,7 +44,14 @@ describe LazyResource::ResourceQueue do
     it 'sends the requests to the request queue and runs the request queue' do
       @queue.queue(@relation)
       @queue.should_receive(:send_to_request_queue!)
-      @queue.request_queue.stub(:items_queued?).and_return(true)
+
+      # Typhoeus overrides stub for the queue, so we have to do this
+      @queue.request_queue.class_eval do
+        def items_queued?
+          true
+        end
+      end
+
       @queue.request_queue.should_receive(:run)
       @queue.run
     end

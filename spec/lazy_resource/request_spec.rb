@@ -22,18 +22,18 @@ describe LazyResource::Request do
 
     it 'sets a default Accept header of application/json' do
       request = LazyResource::Request.new('http://example.com/api', nil)
-      request.options[:headers][:Accept].should == 'application/json'
+      request.headers[:Accept].should == 'application/json'
     end
 
     it 'sets the default method of GET' do
       request = LazyResource::Request.new('http://example.com/api', nil)
-      request.options[:method].should == :get
+      request.method.should == :get
     end
 
     it 'merges the headers from the current thread' do
       Thread.current[:default_headers] = { :"X-Access-Token" => 'abc' }
       request = LazyResource::Request.new('http://example.com/api', nil)
-      request.options[:headers][:"X-Access-Token"].should == 'abc'
+      request.headers[:"X-Access-Token"].should == 'abc'
     end
   end
 

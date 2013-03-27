@@ -58,7 +58,6 @@ module LazyResource
       self.tap do |resource|
         resource.persisted = persisted
         resource.fetched = false
-
         if mapped_name = resource.class.mapped_root_node_name(hash)
           other_attributes = hash
           hash = other_attributes.delete(mapped_name)
@@ -79,12 +78,12 @@ module LazyResource
           elsif type.include?(LazyResource::Mapping)
             resource.send(:"#{name}=", type.load(value))
           else
-            resource.send(:"#{name}=", type.parse(value)) rescue StandardError
+            resource.send(:"#{name}=", type.parse(value))
           end
         end
 
         resource.fetched = true
       end
-    end
   end
+    end
 end

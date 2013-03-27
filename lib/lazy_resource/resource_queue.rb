@@ -20,7 +20,7 @@ module LazyResource
 
     def run
       send_to_request_queue!
-      request_queue.run if request_queue.items_queued?
+      request_queue.run
     end
 
     def send_to_request_queue!
