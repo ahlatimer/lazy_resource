@@ -78,7 +78,7 @@ module LazyResource
           elsif type.include?(LazyResource::Mapping)
             resource.send(:"#{name}=", type.load(value))
           else
-            resource.send(:"#{name}=", type.parse(value))
+            resource.send(:"#{name}=", type.parse(value)) rescue StandardError
           end
         end
 
