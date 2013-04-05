@@ -28,4 +28,29 @@ describe LazyResource do
       request.execute_callbacks
     end
   end
+
+  describe '#deprecate' do
+    it 'logs a message about a deprecation' do
+      LazyResource.logger.should_receive(:info).with("a deprecation from file.rb#123")
+      LazyResource.deprecate('a deprecation', 'file.rb', 123)
+    end
+  end
+
+  describe '#max_concurrency=' do
+    it 'sets the max_concurrency' do
+      LazyResource.max_concurrency = 100
+      LazyResource.max_concurrency.should == 100
+    end
+  end
+
+  describe '#max_concurrency' do
+    before :each do
+      Thread.current[:request_queue] = nil
+    end
+
+    it 'determines the amount of maximum concurrent requests Hydra will make' do
+      LazyResource.max_concurrency = 100
+      User.request_queue.max_concurrency.should == 100
+    end
+  end
 end
