@@ -161,6 +161,25 @@ photos = Photo.where(:user_id => 123)
 photos.other_attributes # => { 'total' => 100, 'page' => 2, ... }
 ```
 
+Sending default headers or params
+
+Keep in mind that this can be accomplished by using, .e.g,
+`.where(:access_token => current_user.access_token, :headers => { :"X-Access-Token" => current_user.access_token })`,
+but I prefer this method because it keeps the logic in one place and
+doesn't litter your where calls with stuff that doesn't look
+ActiveRecord-y. Using Thread.current does seem a bit icky, but at least
+it's in one place...
+
+```ruby
+# in an around_filter or similar
+Thread.current[:default_headers] = { :"X-Access-Token" => current_user.access_token }
+Thread.current[:default_params] = { :"access_token" => current_user.access_token }
+yield
+# this is important, otherwise the headers/params could persist amongst various requests
+Thread.current[:default_headers] = nil
+Thread.current[:default_params] = nil
+```
+
 ## Contributing
 
 1. Fork it

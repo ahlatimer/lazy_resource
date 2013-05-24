@@ -9,6 +9,10 @@ module LazyResource
       options[:headers] ||= {}
       options[:headers][:Accept] ||= 'application/json'
       options[:headers].merge!(Thread.current[:default_headers]) unless Thread.current[:default_headers].nil?
+
+      options[:params] ||= {}
+      options[:params].merge!(Thread.current[:default_params]) unless Thread.current[:default_params].nil?
+
       options[:method] ||= :get
 
       super(url, options)

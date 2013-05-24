@@ -18,6 +18,7 @@ describe LazyResource::Request do
 
     after :each do
       Thread.current[:default_headers] = nil
+      Thread.current[:default_params] = nil
     end
 
     it 'sets a default Accept header of application/json' do
@@ -34,6 +35,12 @@ describe LazyResource::Request do
       Thread.current[:default_headers] = { :"X-Access-Token" => 'abc' }
       request = LazyResource::Request.new('http://example.com/api', nil)
       request.headers[:"X-Access-Token"].should == 'abc'
+    end
+
+    it 'merged the params from the current thread' do
+      Thread.current[:default_params] = { :"access_token" => 'abc' }
+      request = LazyResource::Request.new('https://example.com/api', nil)
+      request.params[:"access_token"].should == 'abc'
     end
   end
 

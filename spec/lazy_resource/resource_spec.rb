@@ -160,7 +160,7 @@ describe LazyResource::Resource do
   describe '#destroy' do
     before :each do
       LazyResource::HttpMock.respond_to do |responder|
-        responder.delete('http://example.com/users/1', '')
+        responder.delete('http://example.com/users/1?', '')
       end
     end
 
@@ -254,7 +254,7 @@ describe LazyResource::Resource do
   describe '.find' do
     before :each do
       LazyResource::HttpMock.respond_to do |responder|
-        responder.get('http://example.com/users/1', { :name => 'Andrew' }.to_json)
+        responder.get('http://example.com/users/1?', { :name => 'Andrew' }.to_json)
       end
     end
 
