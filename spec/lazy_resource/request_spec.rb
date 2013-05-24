@@ -40,7 +40,7 @@ describe LazyResource::Request do
     it 'merged the params from the current thread' do
       Thread.current[:default_params] = { :"access_token" => 'abc' }
       request = LazyResource::Request.new('https://example.com/api', nil)
-      request.params[:"access_token"].should == 'abc'
+      request.options[:params][:"access_token"].should == 'abc'
     end
   end
 
