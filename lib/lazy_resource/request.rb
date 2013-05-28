@@ -15,6 +15,8 @@ module LazyResource
                   .map { |param| param.split('=') }
                   .inject({}) { |memo, (k,v)| memo[k] = v; memo }
 
+      url.gsub!(/\?.*/, '')
+
       options[:params] ||= {}
       options[:params].merge!(params)
       options[:params].merge!(Thread.current[:default_params]) unless Thread.current[:default_params].nil?

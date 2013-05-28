@@ -46,6 +46,7 @@ describe LazyResource::Request do
     it 'merges params in the url into the options params' do
       request = LazyResource::Request.new('https://example.com/api?foo=bar', nil, { :params => { 'fizz' => 'buzz' } })
       request.params.should == { 'foo' => 'bar', 'fizz' => 'buzz' }
+      request.url.should == 'https://example.com/api?fizz=buzz&foo=bar'
     end
   end
 
