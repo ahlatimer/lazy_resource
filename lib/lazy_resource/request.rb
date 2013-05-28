@@ -10,7 +10,13 @@ module LazyResource
       options[:headers][:Accept] ||= 'application/json'
       options[:headers].merge!(Thread.current[:default_headers]) unless Thread.current[:default_headers].nil?
 
+      params = (URI.parse(url).query || '')
+                  .split('&')
+                  .map { |param| param.split('=') }
+                  .inject({}) { |memo, (k,v)| memo[k] = v; memo }
+
       options[:params] ||= {}
+      options[:params].merge!(params)
       options[:params].merge!(Thread.current[:default_params]) unless Thread.current[:default_params].nil?
 
       options[:method] ||= :get

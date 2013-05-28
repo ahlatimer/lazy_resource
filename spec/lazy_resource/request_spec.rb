@@ -42,6 +42,11 @@ describe LazyResource::Request do
       request = LazyResource::Request.new('https://example.com/api', nil)
       request.params[:"access_token"].should == 'abc'
     end
+
+    it 'merges params in the url into the options params' do
+      request = LazyResource::Request.new('https://example.com/api?foo=bar', nil, { :params => { 'fizz' => 'buzz' } })
+      request.params.should == { 'foo' => 'bar', 'fizz' => 'buzz' }
+    end
   end
 
   describe '#parse' do
