@@ -98,6 +98,20 @@ describe LazyResource::Attributes do
             @foo.user.route.should == 'http://example.com/path/to/user'
           end
         end
+
+        context ':using' do
+          after :all do
+            AttributeObject.attribute(:posts_url, String)
+            AttributeObject.attribute(:user_url, String)
+            AttributeObject.attribute(:posts, [Post], :route => :posts_url)
+            AttributeObject.attribute(:user, User, :route => :user_url)
+          end
+
+          it 'generates a deprecation warning when using :using' do
+            LazyResource.should_receive(:deprecate).with("Attribute option :using is deprecated. Please use :route instead.", anything, anything)
+            AttributeObject.attribute(:posts, [Post], :using => :posts_url)
+          end
+        end
       end
     end
   end
