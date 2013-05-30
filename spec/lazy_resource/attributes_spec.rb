@@ -83,19 +83,17 @@ describe LazyResource::Attributes do
         context ':route' do
           before :each do
             AttributeObject.attribute(:posts_url, String)
-            AttributeObject.attribute(:user_url, String)
             AttributeObject.attribute(:posts, [Post], :route => :posts_url)
-            AttributeObject.attribute(:user, User, :route => :user_url)
-            @foo.send(:instance_variable_set, "@posts_url", 'http://example.com/path/to/posts')
-            @foo.send(:instance_variable_set, "@user_url", 'http://example.com/path/to/user')
+            AttributeObject.attribute(:user, User, :route => "/path/to/user")
+            @foo.send(:instance_variable_set, "@posts_url", '/path/to/posts')
           end
 
           it 'finds a collection using the specified url' do
-            @foo.posts.route.should == 'http://example.com/path/to/posts'
+            @foo.posts.route.should == '/path/to/posts'
           end
 
           it 'finds a singular resource with the specified url' do
-            @foo.user.route.should == 'http://example.com/path/to/user'
+            @foo.user.route.should == '/path/to/user'
           end
         end
 
