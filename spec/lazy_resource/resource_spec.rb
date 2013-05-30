@@ -243,8 +243,7 @@ describe LazyResource::Resource do
 
       params = { :id => 1, :created_at => DateTime.now.to_s }
       user = User.load(params)
-      params[:created_at_in_words] = "1 second ago"
-      user.as_json(:include_time_ago_in_words => true).should == params
+      user.as_json(:include_time_ago_in_words => true)[:created_at_in_words].should =~ /\d second(s)? ago/
     end
   end
 
