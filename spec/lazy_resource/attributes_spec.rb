@@ -80,12 +80,12 @@ describe LazyResource::Attributes do
           @foo.user
         end
 
-        context ':using' do
+        context ':route' do
           before :each do
             AttributeObject.attribute(:posts_url, String)
             AttributeObject.attribute(:user_url, String)
-            AttributeObject.attribute(:posts, [Post], :using => :posts_url)
-            AttributeObject.attribute(:user, User, :using => :user_url)
+            AttributeObject.attribute(:posts, [Post], :route => :posts_url)
+            AttributeObject.attribute(:user, User, :route => :user_url)
             @foo.send(:instance_variable_set, "@posts_url", 'http://example.com/path/to/posts')
             @foo.send(:instance_variable_set, "@user_url", 'http://example.com/path/to/user')
           end
@@ -130,8 +130,8 @@ describe LazyResource::Attributes do
   describe '.attributes' do
     it 'returns a hash of the defined attributes' do
       AttributeObject.attributes.should == { :name => { :type => String, :options => {} },
-                                             :posts => { :type => [Post], :options => { :using => :posts_url } },
-                                             :user => { :type => User, :options => { :using => :user_url } },
+                                             :posts => { :type => [Post], :options => { :route => :posts_url } },
+                                             :user => { :type => User, :options => { :route => :user_url } },
                                              :posts_url => { :type => String, :options => {} },
                                              :user_url => { :type => String, :options => {} } }
     end
