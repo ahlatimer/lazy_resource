@@ -76,7 +76,7 @@ module LazyResource
           else
             method << <<-RUBY
               if @#{name}.nil?
-                route = self.respond_to?(#{route}) ? self.#{route} : #{route}
+                route = self.respond_to?("#{route}") ? self.#{route} : #{route}
                 @#{name} = #{type.first}.where(:"\#{self.class.element_name}_id" => self.primary_key, :_route => route)
               end
 
@@ -93,7 +93,7 @@ module LazyResource
           else
             method << <<-RUBY
               if @#{name}.nil?
-                route = self.respond_to?(#{route}) ? self.#{route} : #{route}
+                route = self.respond_to?("#{route}") ? self.#{route} : #{route}
                 @#{name} = #{type}.where(:"\#{self.class.element_name}_id" => self.primary_key, :_route => route)
               end
 
