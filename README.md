@@ -125,6 +125,9 @@ class Photo
   # define the route inline
   attribute :location, Location, :route => '/location/:lat,:long'
 
+  # define the route inline using a proc
+  attribute :model, Model, :route => lambda { "/photos/#{id}/model" }
+
   # define the route using a method or attribute
   attribute :photographer, User, :route => :photographer_url
   attribute :photographer_url, String
