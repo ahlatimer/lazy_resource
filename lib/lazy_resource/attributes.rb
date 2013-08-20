@@ -69,6 +69,7 @@ module LazyResource
         if route.is_a?(Proc)
           route_method_name = "_#{name}_route".to_sym
           define_method(route_method_name, route)
+          protected(route_method_name)
           route = route_method_name
         end
 
