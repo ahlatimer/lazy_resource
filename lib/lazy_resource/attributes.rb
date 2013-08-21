@@ -66,6 +66,13 @@ module LazyResource
           LazyResource.deprecate("Attribute option :using is deprecated. Please use :route instead.", __FILE__, __LINE__)
         end
 
+        if route.is_a?(Proc)
+          route_method_name = "_#{name}_route".to_sym
+          define_method(route_method_name, route)
+          protected(route_method_name)
+          route = route_method_name
+        end
+
         if type.is_a?(Array) && type.first.include?(LazyResource::Resource)
           if route.nil?
             method << <<-RUBY
@@ -77,6 +84,7 @@ module LazyResource
             method << <<-RUBY
               if @#{name}.nil?
                 route = self.respond_to?("#{route}") ? self.send("#{route}") : "#{route}"
+                route = route.is_a?(Proc) ? route.call : route
                 @#{name} = #{type.first}.where(:"\#{self.class.element_name}_id" => self.primary_key, :_route => route)
               end
 
@@ -94,6 +102,7 @@ module LazyResource
             method << <<-RUBY
               if @#{name}.nil?
                 route = self.respond_to?("#{route}") ? self.send("#{route}") : "#{route}"
+                route = route.is_a?(Proc) ? route.call : route
                 @#{name} = #{type}.where(:"\#{self.class.element_name}_id" => self.primary_key, :_route => route)
               end
 
