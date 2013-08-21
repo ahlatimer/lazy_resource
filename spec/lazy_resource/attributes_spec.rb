@@ -1,5 +1,8 @@
 require 'spec_helper'
 
+# We need a reference to this exact proc in two spots
+LAMBDA_ROUTE = lambda { "/path/to/#{name}" }
+
 class AttributeObject
   include LazyResource::Attributes
 
@@ -95,6 +98,17 @@ describe LazyResource::Attributes do
           it 'finds a singular resource with the specified url' do
             @foo.user.route.should == '/path/to/user'
           end
+
+          context 'as a proc' do
+            before :each do
+              AttributeObject.any_instance.stub(:name).and_return("foobar")
+              AttributeObject.attribute(:comments, [Post], :route => LAMBDA_ROUTE)
+            end
+
+            it 'evaluates the proc to generate the url' do
+              @foo.comments.route.should == '/path/to/foobar'
+            end
+          end
         end
 
         context ':using' do
@@ -145,7 +159,8 @@ describe LazyResource::Attributes do
                                              :posts => { :type => [Post], :options => { :route => :posts_url } },
                                              :user => { :type => User, :options => { :route => :user_url } },
                                              :posts_url => { :type => String, :options => {} },
-                                             :user_url => { :type => String, :options => {} } }
+                                             :user_url => { :type => String, :options => {} },
+                                             :comments => { :type => [Post], :options => { :route => LAMBDA_ROUTE } } }
     end
   end
 
