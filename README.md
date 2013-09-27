@@ -99,9 +99,15 @@ class User
 end
 ```
 
-### I thought you said this was non-blocking?
+### What's this about blocking less?
 
-It is. That original example above with me, the Bobs, Sam, and Terry? Those
+Unlike ActiveResource, LazyResource doesn't initiate a request on every
+find. Instead, whenever you do a find, where, etc. it throws those
+requests into a queue that gets processed when you hit an accessor.
+Built on Typhoeus, all of those queued requests get executed at the same
+time.
+
+That original example above with me, the Bobs, Sam, and Terry? Those
 first four requests would all get executed at the same time, when Terry
 was saved. Pretty neat, eh?
 
