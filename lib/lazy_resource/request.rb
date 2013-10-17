@@ -6,7 +6,7 @@ module LazyResource
 
     def initialize(url, resource, options={})
       options = options.dup
-      options[:headers] ||= {}
+      options[:headers] = (options[:headers] || {}).dup
       options[:headers][:Accept] ||= 'application/json'
       options[:headers].merge!(Thread.current[:default_headers]) unless Thread.current[:default_headers].nil?
 

@@ -117,7 +117,8 @@ describe LazyResource::Resource do
       user = User.new(:name => 'Andrew')
       params = ['http://example.com/users', user, {
         :method => :post,
-        :params => { :user => { 'name' => 'Andrew' } }
+        :params => { :user => { 'name' => 'Andrew' } },
+        :headers => {}
       }]
       request = LazyResource::Request.new(*params)
       LazyResource::Request.should_receive(:new).with(*params).and_return(request)
@@ -149,7 +150,8 @@ describe LazyResource::Resource do
       user.name = 'James'
       params = ['http://example.com/users/1', user, {
         :method => :put,
-        :params => { :user => { 'name' => 'James' } }
+        :params => { :user => { 'name' => 'James' } },
+        :headers => {}
       }]
       request = LazyResource::Request.new(*params)
       LazyResource::Request.should_receive(:new).with(*params).and_return(request)
@@ -167,7 +169,8 @@ describe LazyResource::Resource do
     it 'issues a DELETE request to the resource\'s element url' do
       user = User.load(:name => 'Andrew', :id => 1)
       params = ['http://example.com/users/1', user, {
-        :method => :delete
+        :method => :delete,
+        :headers => {}
       }]
       request = LazyResource::Request.new(*params)
       LazyResource::Request.should_receive(:new).with(*params).and_return(request)
@@ -368,7 +371,8 @@ describe LazyResource::Resource do
       user = User.new(:name => 'Andrew')
       params = ['http://example.com/users', user, {
         :method => :post,
-        :params => { :user => { 'name' => 'Andrew' } }
+        :params => { :user => { 'name' => 'Andrew' } },
+        :headers => {}
       }]
       request = LazyResource::Request.new(*params)
       LazyResource::Request.should_receive(:new).with(*params).and_return(request)
