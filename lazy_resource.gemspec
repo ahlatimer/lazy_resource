@@ -18,5 +18,5 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'activemodel', '~> 3.1'
   gem.add_dependency 'activesupport', '~> 3.1'
   gem.add_dependency 'json', '>= 1.5.2'
-  gem.add_dependency 'typhoeus', '0.6.3'
+  gem.add_dependency 'typhoeus', '0.6.6'
 end
