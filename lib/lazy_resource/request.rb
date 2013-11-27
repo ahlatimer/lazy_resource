@@ -15,6 +15,10 @@ module LazyResource
 
       options[:method] ||= :get
 
+      if [:post, :put].include?(options[:method])
+        options[:body] = URI.unescape(options.delete(:params).to_query)
+      end
+
       super(url, options)
 
       @resource = resource
