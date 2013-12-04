@@ -164,7 +164,7 @@ module LazyResource
 
     def create
       run_callbacks :create do
-        request = Request.new(self.collection_url, self, { :method => :post, :params => attribute_params })
+        request = Request.new(self.collection_url, self, { :method => :post, :body => attribute_params.to_json })
         self.class.request_queue.queue(request)
         self.class.fetch_all
         self.changed_attributes.clear
@@ -173,7 +173,7 @@ module LazyResource
 
     def update
       run_callbacks :update do
-        request = Request.new(self.element_url, self, { :method => :put, :params => attribute_params })
+        request = Request.new(self.element_url, self, { :method => :put, :body => attribute_params.to_json })
         self.class.request_queue.queue(request)
         self.class.fetch_all
         self.changed_attributes.clear
