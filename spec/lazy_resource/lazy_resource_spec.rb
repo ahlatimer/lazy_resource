@@ -22,7 +22,7 @@ describe LazyResource do
 
   describe '#debug' do
     it 'logs when a request completes' do
-      LazyResource.logger.should_receive(:info)
+      ActiveSupport::Notifications.should_receive(:instrument).with('request.lazy_resource', kind_of(Hash))
       request = LazyResource::Request.new('http://example.com', User.new)
       request.response = Typhoeus::Response.new
       request.execute_callbacks

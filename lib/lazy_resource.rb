@@ -22,6 +22,8 @@ require 'active_support/core_ext/uri'
 require 'lazy_resource/version'
 require 'lazy_resource/errors'
 
+require 'lazy_resource/log_subscriber'
+
 require 'lazy_resource/ext/typhoeus'
 
 module LazyResource

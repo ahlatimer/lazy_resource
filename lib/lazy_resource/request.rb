@@ -33,7 +33,7 @@ module LazyResource
     end
 
     def log_response(response)
-      LazyResource.logger.info "\t[#{response.code}](#{((response.time || 0) * 1000).ceil}ms): #{self.url}"
+      ActiveSupport::Notifications.instrument('request.lazy_resource', code: response.code, time: response.time, url: url)
     end
 
     def parse
