@@ -117,7 +117,7 @@ describe LazyResource::Resource do
       user = User.new(:name => 'Andrew')
       params = ['http://example.com/users', user, {
         :method => :post,
-        :params => { :user => { 'name' => 'Andrew' } }
+        :body => { 'user' => { 'name' => 'Andrew' } }.to_json
       }]
       request = LazyResource::Request.new(*params)
       LazyResource::Request.should_receive(:new).with(*params).and_return(request)
@@ -148,7 +148,7 @@ describe LazyResource::Resource do
       user.name = 'James'
       params = ['http://example.com/users/1', user, {
         :method => :put,
-        :params => { :user => { 'name' => 'James' } }
+        :body => { 'user' => { 'name' => 'James' } }.to_json
       }]
       request = LazyResource::Request.new(*params)
       LazyResource::Request.should_receive(:new).with(*params).and_return(request)
@@ -185,7 +185,7 @@ describe LazyResource::Resource do
       user = User.load(:name => 'Andrew', :id => 1)
       params = ['http://example.com/users/1', user, {
         :method => :put,
-        :params => { :user => { 'name' => 'James' } }
+        :body => { 'user' => { 'name' => 'James' } }.to_json
       }]
       request = LazyResource::Request.new(*params)
       LazyResource::Request.should_receive(:new).with(*params).and_return(request)
@@ -364,7 +364,7 @@ describe LazyResource::Resource do
       user = User.new(:name => 'Andrew')
       params = ['http://example.com/users', user, {
         :method => :post,
-        :params => { :user => { 'name' => 'Andrew' } }
+        :body => { 'user' => { 'name' => 'Andrew' } }.to_json
       }]
       request = LazyResource::Request.new(*params)
       LazyResource::Request.should_receive(:new).with(*params).and_return(request)
