@@ -5,17 +5,29 @@ module Typhoeus
     end
 
     def run_with_logging
-      log = LazyResource.debug && LazyResource.logger && @multi.items_queued_but_not_running?
-      if log
-        LazyResource.logger.info "Processing requests:"
-        start_time = Time.now
+      if log?
+        log { run_without_logging }
+      else
+        run_without_logging
       end
+    end
 
-      run_without_logging
+    private
+    def log?
+      LazyResource.debug && LazyResource.logger && items_queued? && !running?
+    end
 
-      if log
-        LazyResource.logger.info "Requests processed in #{((Time.now - start_time) * 1000).ceil}ms"
-      end
+    def running?
+      @running || @multi.running?
+    end
+
+    def log(&block)
+      start_time = Time.now
+      ActiveSupport::Notifications.instrument('request_group_started.lazy_resource', start_time: start_time)
+
+      yield
+
+      ActiveSupport::Notifications.instrument('request_group_finished.lazy_resource', start_time: start_time, end_time: Time.now)
     end
 
     alias_method :run_without_logging, :run
@@ -25,8 +37,12 @@ end
 
 module Ethon
   class Multi
-    def items_queued_but_not_running?
-      easy_handles.size > 0 && running_count <= 0
+    def running?
+      running_count > 0
+    end
+
+    def running_count
+      @running_count ||= 0
     end
 
     def items_queued?
