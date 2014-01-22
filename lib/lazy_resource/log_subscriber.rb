@@ -9,7 +9,7 @@ module LazyResource
     end
 
     def request_group_finished(event)
-      info "Requests finished in #{((event[:end_time] - event[:start_time]) * 1000).ceil}ms"
+      info "Requests finished in #{((event.payload[:end_time] - event.payload[:start_time]) * 1000).ceil}ms"
     end
   end
 end
