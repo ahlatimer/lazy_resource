@@ -6,22 +6,27 @@ module LazyResource
 
     def initialize(url, resource, options={})
       options = options.dup
-      options[:headers] ||= {}
+      options[:headers] = (options[:headers] || {}).dup
       options[:headers][:Accept] ||= 'application/json'
       options[:headers].merge!(Thread.current[:default_headers]) unless Thread.current[:default_headers].nil?
 
+      params = (URI.parse(url).query || '')
+                  .split('&')
+                  .map { |param| param.split('=') }
+                  .inject({}) { |memo, (k,v)| memo[k] = v; memo }
+
+      url.gsub!(/\?.*/, '')
+
       options[:params] ||= {}
+      options[:params].merge!(params)
       options[:params].merge!(Thread.current[:default_params]) unless Thread.current[:default_params].nil?
 
       options[:method] ||= :get
 
-      if [:post, :put].include?(options[:method])
-        options[:headers]['Content-Type'] = 'application/json'
-      end
-
       super(url, options)
 
       @resource = resource
+
       self.on_complete do
         log_response(response) if LazyResource.debug && LazyResource.logger
         @response = response
