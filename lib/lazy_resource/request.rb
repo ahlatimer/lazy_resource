@@ -23,6 +23,10 @@ module LazyResource
 
       options[:method] ||= :get
 
+      if [:post, :put].include?(options[:method])
+        options[:headers]['Content-Type'] = 'application/json'
+      end
+
       super(url, options)
 
       @resource = resource
