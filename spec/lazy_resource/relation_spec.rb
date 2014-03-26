@@ -174,4 +174,23 @@ describe LazyResource::Relation do
       lambda { relation.foo }.should raise_error(NoMethodError)
     end
   end
+
+  describe '#method' do
+    it 'returns the provided method as a symbol' do
+      relation = LazyResource::Relation.new(User)
+      relation.method = 'post'
+      relation.method.should == :post
+    end
+
+    it 'downcases the returned method' do
+      relation = LazyResource::Relation.new(User)
+      relation.method = 'POST'
+      relation.method.should == :post
+    end
+
+    it 'returns nil when no method has been provided' do
+      relation = LazyResource::Relation.new(User)
+      relation.method.should be_nil
+    end
+  end
 end
