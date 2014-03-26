@@ -57,6 +57,17 @@ describe LazyResource::ResourceQueue do
       @queue.send_to_request_queue!
       @queue.instance_variable_get("@queue").should == []
     end
+
+    it 'sends the request to the queue using the relation\'s specified method' do
+      LazyResource::Request
+        .should_receive(:new)
+        .with(anything(), anything(), hash_including(:method => :post))
+        .and_call_original
+
+      @relation.method = :post
+      @queue.queue(@relation)
+      @queue.send_to_request_queue!
+    end
   end
 
   describe '#url_for' do

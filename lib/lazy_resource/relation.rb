@@ -9,6 +9,7 @@ module LazyResource
     end
 
     attr_accessor :fetched, :klass, :values, :from, :site, :other_attributes
+    attr_writer :method
     attr_reader :route
 
     def initialize(klass, options = {})
@@ -16,6 +17,7 @@ module LazyResource
       @route = options.fetch(:where_values, {}).delete(:_route)
       @values = options.slice(:where_values, :order_value, :limit_value, :offset_value, :page_value)
       @fetched = options[:fetched] || false
+      @method = options[:method]
 
       unless fetched?
         resource_queue.queue(self)
@@ -30,6 +32,10 @@ module LazyResource
 
     def collection_name
       from
+    end
+
+    def method
+      @method ? @method.downcase.to_sym : nil
     end
 
     def to_params
