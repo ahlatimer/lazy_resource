@@ -25,16 +25,24 @@ module LazyResource
 
     def send_to_request_queue!
       while(relation = @queue.pop)
-        request = Request.new(url_for(relation), relation, :headers => relation.headers, :method => relation.method)
+        options = { :headers => relation.headers, :method => relation.method }
+
+        if [:post, :put].include?(relation.method)
+          options[:body] = relation.to_params.to_json
+        end
+
+        request = Request.new(url_for(relation), relation, options)
         request_queue.queue(request)
       end
     end
 
     def url_for(relation)
       if relation.route.nil?
+        include_query = ![:post, :put].include?(relation.method)
+
         url = ''
         url << relation.klass.site
-        url << self.class.collection_path(relation.to_params, nil, relation.from)
+        url << self.class.collection_path(relation.to_params, nil, relation.from, include_query)
         url
       else
         url = relation.route
