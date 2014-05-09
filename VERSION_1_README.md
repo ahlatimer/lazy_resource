@@ -13,7 +13,7 @@ is what Version 1 aims to do.
 Well, it's not actually a total rewrite. There's plenty of code in LazyResource
 that works fine and isn't particular ugly. My main aims are to clean up the
 class hierarchy, correct the errors in syntax, and clean up some of the
-particularly gnarly bits of codes (like anything in the Attributes module).
+particularly gnarly bits of code (like anything in the Attributes module).
 
 ## What's changing?
 
@@ -50,3 +50,13 @@ Post.route(company_id: 123).params(user_id: 123)
 
 In case you do want the magic, just don't call route. #params can work
 the same as #where.
+
+Somewhere down the road, I might copy (or use, depending on how many
+dependencies it has to other bits) the Rails routing code to give you nice route
+generators. That way you could do stuff like
+
+```ruby
+Post.route { company_posts_path(company) }
+# or
+Post.route(company)
+```
