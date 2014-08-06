@@ -42,7 +42,7 @@ module LazyResource
 
         url = ''
         url << relation.klass.site
-        url << self.class.collection_path(relation.to_params, nil, relation.from, include_query)
+        url << relation.klass.collection_path(relation.to_params, nil, relation.from, include_query)
         url
       else
         url = relation.route
