@@ -30,9 +30,9 @@ module LazyResource
       end
     end
 
-    def route(*args)
+    def route(*args, &block)
       self.tap do
-
+        router.apply_overrides(*args, &block)
       end
     end
 
@@ -68,7 +68,7 @@ module LazyResource
       end
 
       self.tap do
-        url = Router.new(self, @model, @model_class)
+        url = router.url
         request = Typhoeus::Request.new(url, options)
 
         request.on_complete do |response|
@@ -104,6 +104,10 @@ module LazyResource
     end
 
     private
+    def router
+      @router ||= Router.new(self, @model, @model_class)
+    end
+
     def merge(other)
       other.to_hash.each do |k,v|
         self.send(k, v)
