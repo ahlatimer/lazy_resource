@@ -1,6 +1,7 @@
 module LazyResource
   module Persistence
     extend ActiveSupport::Concern
+    include ActiveModel::Validations
 
     def save
       return true if !changed?
@@ -11,12 +12,14 @@ module LazyResource
     end
 
     def create
+      return false if !valid?
       run_callbacks :create do
         Request.new(self).body(to_body_for_create).method(:post).run.success?
       end
     end
 
     def update
+      return false if !valid?
       run_callbacks :update do
         Request.new(self).body(to_body_for_update).method(:put).run.success?
       end

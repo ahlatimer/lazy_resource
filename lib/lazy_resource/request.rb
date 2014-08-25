@@ -4,6 +4,10 @@ module LazyResource
       def queue
         Thread.current[:lazy_resource_queue] ||= []
       end
+
+      def hydra
+        Thread.current[:hydra] ||= Typhoeus::Hydra.new(:max_concurrency => LazyResource.max_concurrency)
+      end
     end
 
     def initialize(model_or_class)
@@ -21,7 +25,7 @@ module LazyResource
 
     def params(params={})
       self.tap do
-        @params ||= {}
+        @params ||= Thread.current[:default_params] || {}
         @params.merge!(params)
       end
     end
@@ -34,7 +38,7 @@ module LazyResource
 
     def headers(headers={})
       self.tap do
-        @headers ||= {}
+        @headers ||= Thread.current[:default_headers] || {}
         @headers.merge!(params)
       end
     end
@@ -52,7 +56,30 @@ module LazyResource
     end
 
     def success?
-      true
+      run if @response.nil?
+      @response.code >= 200 && @response.code < 300
+    end
+
+    def run(queue_others=true)
+      if queue_others
+        while(self.class.queue.any?)
+          self.class.queue.pop.run(false)
+        end
+      end
+
+      self.tap do
+        url = Router.new(self, @model, @model_class)
+        request = Typhoeus::Request.new(url, options)
+
+        request.on_complete do |response|
+          @response = response
+          parse
+        end
+
+        hydra.queue(request)
+
+        hydra.run if queue_others
+      end
     end
 
     def to_hash
@@ -67,8 +94,10 @@ module LazyResource
 
     def method_missing(method_name, *args, &block)
       if @model_class.respond_to?(method_name)
-        request = @model_class.send(method_name)
+        request = @model_class.send(method_name, *args, &block)
         merge(request)
+      elsif success? && @model.respond_to?(method_name)
+        @model.send(methon_name, *args, &block)
       else
         super(method_name, *args, &block)
       end
@@ -78,6 +107,25 @@ module LazyResource
     def merge(other)
       other.to_hash.each do |k,v|
         self.send(k, v)
+      end
+    end
+
+    def options
+      self.to_hash.slice(:params, :headers, :body, :method).tap do |options|
+        options[:headers][:Accept] ||= 'application/json'
+        options[:headers]['Content-Type'] ||= 'application/json'
+      end
+    end
+
+    def parse
+      unless @response.body.nil? || @response.body == ''
+        hash = JSON.parse(@response.body)
+
+        if @model
+          @model.from_hash(hash, false)
+        else
+          @model_class.from_json(hash)
+        end
       end
     end
   end

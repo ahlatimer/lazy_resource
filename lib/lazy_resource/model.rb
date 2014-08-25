@@ -4,9 +4,12 @@ module LazyResource
     include ActiveModel::Dirty
 
     include LazyResource::RequestDSL
+    include LazyResource::RouterDSL
     include LazyResource::Persistence
 
     class << self
+      attr_accessor :root_node_name
+
       def attributes
         @attributes ||= {}
       end
@@ -41,8 +44,29 @@ module LazyResource
       end
 
       def from_array(array)
-        array.map do |hash|
+        LazyResource::Collection.new(array).map do |hash|
           self.from_hash(hash)
+        end
+      end
+
+      def from_json(json)
+        if objects.is_a?(Array)
+          self.from_array(json)
+        else
+          if mapped_name = self.mapped_root_node_name(json)
+            self.from_json(json.delete(mapped_name)).tap do |obj|
+              obj.other_attributes = json
+            end
+          else
+            self.from_hash(json)
+          end
+        end
+      end
+
+      def mapped_root_node_name(objects)
+        if self.root_node_name && objects.respond_to?(:keys)
+          root_node_names = self.root_node_name.is_a?(Array) ? self.root_node_name : [self.root_node_name]
+          (root_node_names.map(&:to_s) & objects.keys).first
         end
       end
     end
