@@ -8,7 +8,11 @@ module LazyResource
     include LazyResource::Persistence
 
     class << self
-      attr_accessor :root_node_name
+      attr_accessor :root_node_name, :primary_key_name
+
+      def primary_key_name
+        @primary_key_name ||= 'id'
+      end
 
       def attributes
         @attributes ||= {}
@@ -73,6 +77,10 @@ module LazyResource
 
     def initialize(hash={})
       self.from_hash(hash, true)
+    end
+
+    def primary_key
+      self.send(self.class.primary_key_name)
     end
 
     def from_hash(hash, will_change=false)
