@@ -152,5 +152,10 @@ describe LazyResource::UrlGeneration do
       prefix_options.should == { :comment_id => 1 }
       query_options.should == { :name => 'Andrew' }
     end
+
+    it 'ignores _ids params' do
+      prefix_options, query_options = Item.split_options(:name => 'Andrew', :comment_ids => '1,2')
+      query_options.should == { :name => 'Andrew', :comment_ids => '1,2' }
+    end
   end
 end

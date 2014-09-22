@@ -92,7 +92,7 @@ module LazyResource
 
           (options || {}).each do |key, value|
             next if key.blank?
-            (key =~ /\w*_id/ ? prefix_options : query_options)[key.to_sym] = value
+            (key =~ /\w*_id$/ ? prefix_options : query_options)[key.to_sym] = value
           end
 
           [prefix_options, query_options]
