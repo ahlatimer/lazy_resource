@@ -13,7 +13,7 @@ module LazyResource
       params = (URI.parse(url).query || '')
                   .split('&')
                   .map { |param| param.split('=') }
-                  .inject({}) { |memo, (k,v)| memo[URI.unescape(k)] = v.nil? ? URI.unescape(v) : v; memo }
+                  .inject({}) { |memo, (k,v)| memo[URI.unescape(k)] = v.nil? ? v : URI.unescape(v); memo }
 
       url.gsub!(/\?.*/, '')
 
