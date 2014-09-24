@@ -9,7 +9,7 @@ gem 'debugger'
 gem 'rake'
 gem 'twitter_cldr'
 
-gem 'rspec'
+gem 'rspec', '2.12.0'
 gem 'simplecov', :require => false
 gem 'guard-rspec'
 gem 'growl'

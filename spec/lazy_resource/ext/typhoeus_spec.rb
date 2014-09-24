@@ -25,22 +25,22 @@ describe "Logging added to Typhoeus" do
     end
 
     it 'logs if logging is enabled, there are items to process, and the queue has not yet started processing' do
-      @multi.stub!(:easy_handles).and_return([1,2,3])
-      @multi.stub!(:running_count).and_return(0)
+      @multi.stub(:easy_handles).and_return([1,2,3])
+      @multi.stub(:running_count).and_return(0)
       ActiveSupport::Notifications.should_receive(:instrument).twice
       @hydra.run_with_logging
     end
 
     it 'does not log if there are no items to process' do
-      @multi.stub!(:easy_handles).and_return([])
-      @multi.stub!(:running_count).and_return(0)
+      @multi.stub(:easy_handles).and_return([])
+      @multi.stub(:running_count).and_return(0)
       ActiveSupport::Notifications.should_not_receive(:instrument)
       @hydra.run_with_logging
     end
 
     it 'does not log if the queue is already being processed' do
-      @multi.stub!(:easy_handles).and_return([1,2,3])
-      @multi.stub!(:running_count).and_return(3)
+      @multi.stub(:easy_handles).and_return([1,2,3])
+      @multi.stub(:running_count).and_return(3)
       ActiveSupport::Notifications.should_not_receive(:instrument)
       @hydra.run_with_logging
     end
