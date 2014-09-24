@@ -21,5 +21,5 @@ LazyResource.configure do |config|
 end
 
 RSpec.configure do |config|
-  config.mock_with nil
+  config.mock_with :rspec
 end
