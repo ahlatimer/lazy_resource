@@ -93,7 +93,7 @@ describe LazyResource::Request do
     end
   end
 
-  describe '#handle_errors' do
+  describe '#error' do
     [
       [301, LazyResource::Redirection],
       [400, LazyResource::BadRequest],
@@ -107,11 +107,11 @@ describe LazyResource::Request do
       [500, LazyResource::ServerError]
     ].each do |error|
       describe "status: #{error[0]}" do
-        it "raises #{error[1]}" do
+        it "returns #{error[1]}" do
           request = LazyResource::Request.new('http://example.com', nil)
           response = Typhoeus::Response.new(:code => error[0], :headers => {}, :body => '', :time => 0.3)
           request.response = response
-          lambda { request.handle_errors }.should raise_error(error[1])
+          request.error.should be_a(error[1])
         end
       end
     end
@@ -121,7 +121,7 @@ describe LazyResource::Request do
         request = LazyResource::Request.new('http://example.com', nil)
         response = Typhoeus::Response.new(:code => 402, :headers => {}, :body => '', :time => 0.3)
         request.response = response
-        lambda { request.handle_errors }.should raise_error(LazyResource::ClientError)
+        request.error.should be_a(LazyResource::ClientError)
       end
     end
   end

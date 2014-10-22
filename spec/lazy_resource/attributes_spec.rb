@@ -6,7 +6,7 @@ LAMBDA_ROUTE = lambda { "/path/to/#{name}" }
 class AttributeObject
   include LazyResource::Attributes
 
-  attr_accessor :fetched
+  attr_accessor :fetched, :request_error
 
   def self.resource_queue
     @resource_queue ||= LazyResource::ResourceQueue.new
@@ -63,6 +63,11 @@ describe LazyResource::Attributes do
         @foo.fetched = true
         AttributeObject.should_not_receive(:fetch_all)
         @foo.name
+      end
+
+      it 'raises the error at request_error if it exists' do
+        @foo.request_error = StandardError.new
+        lambda { @foo.name }.should raise_error(StandardError)
       end
 
       describe 'associations' do

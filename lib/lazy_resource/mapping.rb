@@ -2,7 +2,7 @@ module LazyResource
   module Mapping
     extend ActiveSupport::Concern
 
-    attr_accessor :fetched, :persisted, :other_attributes
+    attr_accessor :fetched, :persisted, :other_attributes, :request_error
 
     def fetched?
       @fetched
