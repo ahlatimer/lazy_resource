@@ -99,7 +99,7 @@ module LazyResource
       def offset(offset_value)
         Relation.new(self, :offset_value => offset_value)
       end
-      
+
       def page(page_value)
         Relation.new(self, :page_value => page_value)
       end

@@ -1,6 +1,6 @@
 module LazyResource
   class Request < Typhoeus::Request
-    SUCCESS_STATUSES = [200, 201]
+    SUCCESS_STATUSES = 200...300
 
     attr_accessor :resource, :response
 
@@ -34,7 +34,6 @@ module LazyResource
       self.on_complete do
         log_response(response) if LazyResource.debug && LazyResource.logger
         @response = response
-        handle_errors unless SUCCESS_STATUSES.include?(@response.code)
         parse
       end
 
@@ -46,35 +45,39 @@ module LazyResource
     end
 
     def parse
+      unless SUCCESS_STATUSES.include?(@response.code)
+        @resource.request_error = error
+      end
+
       unless self.response.body.nil? || self.response.body == ''
         @resource.load(JSON.parse(self.response.body))
       end
     end
 
-    def handle_errors
+    def error
       case @response.code
       when 300...400
-        raise Redirection.new(@response)
+        Redirection.new(@response)
       when 400
-        raise BadRequest.new(@response)
+        BadRequest.new(@response)
       when 401
-        raise UnauthorizedAccess.new(@response)
+        UnauthorizedAccess.new(@response)
       when 403
-        raise ForbiddenAccess.new(@response)
+        ForbiddenAccess.new(@response)
       when 404
-        raise ResourceNotFound.new(@response)
+        ResourceNotFound.new(@response)
       when 405
-        raise MethodNotAllowed.new(@response)
+        MethodNotAllowed.new(@response)
       when 409
-        raise ResourceConflict.new(@response)
+        ResourceConflict.new(@response)
       when 410
-        raise ResourceGone.new(@response)
+        ResourceGone.new(@response)
       when 422
-        raise UnprocessableEntity.new(@response)
+        UnprocessableEntity.new(@response)
       when 400...500
-        raise ClientError.new(@response)
+        ClientError.new(@response)
       when 500...600
-        raise ServerError.new(@response)
+        ServerError.new(@response)
       end
     end
   end

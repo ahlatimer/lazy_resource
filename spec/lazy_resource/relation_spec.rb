@@ -173,6 +173,12 @@ describe LazyResource::Relation do
       relation = LazyResource::Relation.new(User)
       lambda { relation.foo }.should raise_error(NoMethodError)
     end
+
+    it 'raises an error if request_error is set' do
+      relation = LazyResource::Relation.new(User, fetched: true)
+      relation.request_error = StandardError.new
+      lambda { relation.to_a }.should raise_error(StandardError)
+    end
   end
 
   describe '#method' do

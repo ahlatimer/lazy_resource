@@ -8,7 +8,7 @@ module LazyResource
       end
     end
 
-    attr_accessor :fetched, :klass, :values, :from, :site, :other_attributes
+    attr_accessor :fetched, :klass, :values, :from, :site, :other_attributes, :request_error
     attr_writer :method
     attr_reader :route
 
@@ -126,6 +126,7 @@ module LazyResource
 
     def to_a
       resource_queue.run if !fetched?
+      raise self.request_error if self.request_error.present?
       result
     end
 

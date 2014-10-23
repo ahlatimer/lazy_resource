@@ -59,6 +59,7 @@ module LazyResource
         method = <<-RUBY
           def #{name}
             self.class.fetch_all if !fetched
+            raise self.request_error if self.request_error.present?
         RUBY
 
         route = options[:using] || options[:route]
