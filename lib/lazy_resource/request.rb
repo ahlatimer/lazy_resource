@@ -45,11 +45,9 @@ module LazyResource
     end
 
     def parse
-      unless SUCCESS_STATUSES.include?(@response.code)
+      if !SUCCESS_STATUSES.include?(@response.code)
         @resource.request_error = error
-      end
-
-      unless self.response.body.nil? || self.response.body == ''
+      elsif !self.response.body.nil? && self.response.body != ''
         @resource.load(JSON.parse(self.response.body))
       end
     end
