@@ -5,7 +5,7 @@ gemspec
 
 # Development gems
 gem 'pry'
-gem 'debugger'
+# gem 'debugger'
 gem 'rake'
 gem 'twitter_cldr'
 
